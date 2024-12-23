@@ -2,6 +2,7 @@ export interface Pagination {
     page: number;
     limit: number;
     offset: number;
+    search : string
   }
 
 export interface PaginationResponse<T> {

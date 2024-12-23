@@ -7,12 +7,12 @@ export const PaginationParams = createParamDecorator((data: unknown, ctx: Execut
   
   const page = parseInt(req.query.page as string) || 1; // Default to page 1
   const limit = parseInt(req.query.limit as string) || 10; // Default to limit 10
-
+  const search = req.query.search as string || ""; // Default to limit 10
   if (page < 1 || limit < 1) {
     throw new BadRequestException('Page and limit must be positive integers.');
   }
 
   const offset = (page - 1) * limit;
 
-  return { page, limit, offset };
+  return { page, limit, offset , search };
 });

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pagination, PaginationResponse } from 'src/common/types/pagination.interface';
@@ -15,19 +15,23 @@ export class EventsService {
   }
 
   async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
+    const { limit, offset, search } = pagination;
+    const where = search ? [{ name: Like(`%${search}%`) } , { description : Like(`%${search}%`)}] : {}; // Assuming you're searching by name
+
     const [result, total] = await this.eventsRepository.findAndCount({
-      take: pagination.limit,
-      skip: pagination.offset,
+      take: limit,
+      skip: offset,
+      where,
     });
 
-    const totalPages = Math.ceil(total / pagination.limit); // Calculate total pages
+    const totalPages = Math.ceil(total / limit); // Calculate total pages
 
     return {
       data: result,
       total,
       currentPage: pagination.page,
       totalPages,
-      limit: pagination.limit,
+      limit,
     };
   }
 
