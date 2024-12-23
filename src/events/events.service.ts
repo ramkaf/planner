@@ -4,6 +4,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { Repository } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Pagination, PaginationResponse } from 'src/common/types/pagination.interface';
 
 @Injectable()
 export class EventsService {
@@ -13,9 +14,23 @@ export class EventsService {
    return await this.eventsRepository.save(repositorySchema)
   }
 
-  async findAll() {
-    return await this.eventsRepository.find();
+  async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
+    const [result, total] = await this.eventsRepository.findAndCount({
+      take: pagination.limit,
+      skip: pagination.offset,
+    });
+
+    const totalPages = Math.ceil(total / pagination.limit); // Calculate total pages
+
+    return {
+      data: result,
+      total,
+      currentPage: pagination.page,
+      totalPages,
+      limit: pagination.limit,
+    };
   }
+
 
   async findOne(id: number) {
     return await this.eventsRepository.findOne({where : {id}})

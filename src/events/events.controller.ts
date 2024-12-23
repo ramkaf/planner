@@ -2,6 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { Event } from './entities/event.entity';
+import { Pagination, PaginationResponse } from 'src/common/types/pagination.interface';
+import { PaginationParams } from 'src/common/decorators/pagination.decorator';
 
 @Controller('events')
 export class EventsController {
@@ -13,8 +16,8 @@ export class EventsController {
   }
 
   @Get()
-  findAll() {
-    return this.eventsService.findAll();
+  async findAll(@PaginationParams() pagination: Pagination): Promise<PaginationResponse<Event>> {
+    return this.eventsService.findAll(pagination);
   }
 
   @Get(':id')
