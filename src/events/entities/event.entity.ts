@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { EventStatus } from '../interfaces/event.interface';
+import { Tag } from 'src/tag/entities/tag.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { Author } from 'src/author/entities/author.entity';
 
 @Entity('event')
 export class Event {
@@ -34,9 +37,6 @@ export class Event {
   capacity: number;
 
   @Column('varchar', { nullable: true })
-  category: string;
-
-  @Column('varchar', { nullable: true })
   organizer_name: string;
 
   @Column('varchar', { nullable: true })
@@ -52,6 +52,16 @@ export class Event {
   })
   status: EventStatus;
 
-  @Column('simple-array', { nullable: true })
-  tags: string[];
+  @ManyToMany(() => Tag, (tag) => tag.events)
+  @JoinTable()  // JoinTable creates a junction table
+  tags: Tag[];
+
+  @ManyToOne(() => Category, (category) => category.events, { nullable: true })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;  
+
+    // Many-to-one relation with Author entity
+    @ManyToOne(() => Author, (author) => author.events, { nullable: true })
+    @JoinColumn({ name: 'author_id' })
+    author: Author;
 }

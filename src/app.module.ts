@@ -6,6 +6,12 @@ import databaseConfig from './config/database.config'; // Import the database co
 import { CustomLoggerService } from './utils/logger.service'; // Import the custom logger
 import { Event } from './events/entities/event.entity';
 import { EventsModule } from './events/events.module';
+import { CategoryModule } from './category/category.module';
+import { TagModule } from './tag/tag.module';
+import { Tag } from './tag/entities/tag.entity';
+import { Category } from './category/entities/category.entity';
+import { AuthorModule } from './author/author.module';
+import { Author } from './author/entities/author.entity';
 
 @Module({
   imports: [
@@ -22,12 +28,15 @@ import { EventsModule } from './events/events.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [Event], // Define your entities here
+        entities: [Event , Tag , Category , Author], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
     }),
-    EventsModule
+    EventsModule,
+    CategoryModule,
+    TagModule,
+    AuthorModule
   ],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
