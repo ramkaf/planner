@@ -12,6 +12,12 @@ import { Tag } from './tag/entities/tag.entity';
 import { Category } from './category/entities/category.entity';
 import { AuthorModule } from './author/author.module';
 import { Author } from './author/entities/author.entity';
+import { TicketModule } from './ticket/ticket.module';
+import { ReviewModule } from './review/review.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './auth/entities/user.entity';
+import { Review } from './review/entities/review.entity';
+import { Ticket } from './ticket/entities/ticket.entity';
 
 @Module({
   imports: [
@@ -28,7 +34,7 @@ import { Author } from './author/entities/author.entity';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [Event , Tag , Category , Author], // Define your entities here
+        entities: [User , Tag , Category , Author ,Review , Ticket], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
@@ -36,7 +42,10 @@ import { Author } from './author/entities/author.entity';
     EventsModule,
     CategoryModule,
     TagModule,
-    AuthorModule
+    AuthorModule,
+    TicketModule,
+    ReviewModule,
+    AuthModule
   ],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
