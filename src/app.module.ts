@@ -14,7 +14,6 @@ import { AuthorModule } from './author/author.module';
 import { Author } from './author/entities/author.entity';
 import { TicketModule } from './ticket/ticket.module';
 import { ReviewModule } from './review/review.module';
-import { AuthModule } from './auth/auth.module';
 import { Review } from './review/entities/review.entity';
 import { Ticket } from './ticket/entities/ticket.entity';
 import { User } from './users/entities/user.entity';
@@ -44,8 +43,7 @@ import { User } from './users/entities/user.entity';
     TagModule,
     AuthorModule,
     TicketModule,
-    ReviewModule,
-    AuthModule
+    ReviewModule
   ],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
