@@ -9,11 +9,15 @@ import { AuthService } from './providers/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from 'src/users/entities/user.entity';
 import { LocalStrategy } from './strategies/local.strategy';
+import { PasswordService } from './providers/password.service';
+import { UsersModule } from 'src/users/users.module';
+import { JwtToolService } from './providers/jwt.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
+    UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -26,7 +30,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],  // Added LocalStrategy
+  providers: [AuthService, LocalStrategy, JwtStrategy , PasswordService , JwtToolService],  // Added LocalStrategy
   exports: [AuthService],
 })
 export class AuthModule {}

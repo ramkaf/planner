@@ -7,29 +7,32 @@ import * as bcrypt from 'bcrypt';
 import { SignUpDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
+import { PasswordService } from './password.service';
+import { UsersService } from 'src/users/providers/users.service';
+import { JwtToolService } from './jwt.service';
+import { ILogin } from '../interfaces/login.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtToolService:JwtToolService,
+    private readonly passwordService: PasswordService,
+    private readonly usersService: UsersService,
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
-    const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
-    
+    const {password} = signUpDto
+    const hashedPassword = await this.passwordService.hashPassword(password)
     const user = this.userRepository.create({
       ...signUpDto,
       password: hashedPassword,
     });
-
     try {
       await this.userRepository.save(user);
-      
-      const token = this.getJwtToken(user);
+      const token = this.jwtToolService.getJwtToken(user);
       delete user.password;
-      
       return { user, token };
     } catch (error) {
       if (error.code === '23505') { // Unique constraint violation
@@ -39,48 +42,24 @@ export class AuthService {
     }
   }
 
-  async login(login: string, password: string): Promise<{ user: any; token: string }> {
+  async login(loginCredentional:ILogin): Promise<{ user: any; token: string }> {
+    const {login , password} = loginCredentional
     const user = await this.validateCredentials(login, password);
-    
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  
-    const token = this.getJwtToken(user);
+    const token = this.jwtToolService.getJwtToken(user);
     return { user, token };
   }
 
-  private getJwtToken(user: User): string {
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-    };
-    return this.jwtService.sign(payload);
-  }
-
   async validateCredentials(login: string, password: string): Promise<any> {
-    const whereClause = [
-      { email: login },
-      { username: login },
-      { phone: login }
-    ];
-  
-    const user = await this.userRepository.findOne({
-      where: whereClause
-    });
-  
-    if (user && await bcrypt.compare(password, user.password)) {
-      // Update last login
+    const user = await this.usersService.findOne(login)
+    if (user && await this.passwordService.comparePasswords(password , user.password)) {
       user.lastLogin = new Date();
       await this.userRepository.save(user);
-      
       const { password, ...result } = user;
       return result;
     }
     return null;
   }
-
-
 }
