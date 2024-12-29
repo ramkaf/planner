@@ -17,6 +17,7 @@ import { ReviewModule } from './review/review.module';
 import { Review } from './review/entities/review.entity';
 import { Ticket } from './ticket/entities/ticket.entity';
 import { User } from './users/entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,12 +39,13 @@ import { User } from './users/entities/user.entity';
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
     }),
+    AuthModule,
     EventsModule,
     CategoryModule,
     TagModule,
     AuthorModule,
     TicketModule,
-    ReviewModule
+    ReviewModule,
   ],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
