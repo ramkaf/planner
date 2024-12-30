@@ -18,6 +18,8 @@ import { Review } from './review/entities/review.entity';
 import { Ticket } from './ticket/entities/ticket.entity';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import { AuthModule } from './auth/auth.module';
     TicketModule,
     ReviewModule,
   ],
+  controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
 export class AppModule {}
