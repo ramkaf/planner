@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { UserRole } from '../interfaces/user.interface';
 
 @Entity()
@@ -15,7 +14,6 @@ export class User {
 
   @Column({ unique: true })
   phone: string;
-
   
   @Column()
   password: string;
@@ -34,10 +32,7 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
-
-  @Column("simple-array", { nullable: true })
-  roles?: UserRole[];
-
+  
   @CreateDateColumn()
   createdAt: Date;
 
@@ -47,16 +42,10 @@ export class User {
   @Column({ nullable: true })
   lastLogin?: Date;
 
-  // Adding role property
   @Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
   role: UserRole;
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
 }
