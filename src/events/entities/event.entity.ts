@@ -1,9 +1,10 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { EventStatus } from '../interfaces/event.interface';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { Author } from 'src/author/entities/author.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Entity('event')
 export class Event {
@@ -43,6 +44,10 @@ export class Event {
   @Column('varchar', { nullable: true })
   organizer_contact: string;
 
+  
+  @Column('int', { nullable: true , default : 0 })
+  seen: number;
+
   @Column('varchar', { nullable: true })
   image_url: string;
 
@@ -68,4 +73,10 @@ export class Event {
     @ManyToOne(() => User, (user) => user.events, { nullable: true }) // Link to the User entity
     @JoinColumn({ name: 'user_id' }) // Foreign key column in the Event table
     user_id: User;
+
+    @ManyToMany(() => User, (user) => user.favoriteEvents)
+    favoriteUsers: User[];
+
+    @OneToMany(() => Review, (review) => review.user)
+    reviews: Review[];
 }
