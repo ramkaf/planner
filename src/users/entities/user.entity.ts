@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { UserRole } from '../interfaces/user.interface';
+import { Event } from 'src/events/entities/event.entity';
 
 @Entity()
 export class User {
@@ -48,4 +49,7 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole;
+  
+  @OneToMany(() => Event, (event) => event.user_id) // Matches the 'user' field in the Event entity
+  events: Event[];
 }

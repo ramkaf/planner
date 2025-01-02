@@ -3,6 +3,7 @@ import { EventStatus } from '../interfaces/event.interface';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { Author } from 'src/author/entities/author.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity('event')
 export class Event {
@@ -60,8 +61,11 @@ export class Event {
   @JoinColumn({ name: 'category_id' })
   category: Category;  
 
-    // Many-to-one relation with Author entity
     @ManyToOne(() => Author, (author) => author.events, { nullable: true })
     @JoinColumn({ name: 'author_id' })
     author: Author;
+    
+    @ManyToOne(() => User, (user) => user.events, { nullable: true }) // Link to the User entity
+    @JoinColumn({ name: 'user_id' }) // Foreign key column in the Event table
+    user_id: User;
 }

@@ -15,6 +15,7 @@ export class UsersService {
   ): Promise<User | null> {
     return await this.userRepository.findOne({
       where: [
+        {id : parseInt(identifier)},
         { email: identifier },
         { phone: identifier },
         { username: identifier },

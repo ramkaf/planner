@@ -4,7 +4,6 @@ import { AuthService } from './providers/auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
-import { Request as ExpressRequest } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -24,5 +23,9 @@ export class AuthController {
     return this.authService.login({login, password});
   }
 
-
+  // @Get()
+  // getProfile(@Request() req: ExpressRequest) {
+  //   console.log(req.user);
+  //   return { user: req.user };
+  // }
 }
