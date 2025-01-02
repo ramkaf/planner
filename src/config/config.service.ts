@@ -26,7 +26,9 @@ export class ConfigService {
     // Validate the object
     const errors = validateSync(this.config);
     if (errors.length > 0) {
-      throw new Error('Configuration validation failed: ' + JSON.stringify(errors));
+      throw new Error(
+        'Configuration validation failed: ' + JSON.stringify(errors),
+      );
     }
 
     // Check database connection

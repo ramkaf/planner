@@ -14,13 +14,16 @@ export class ReviewService {
   constructor(
     @InjectRepository(Review)
     private reviewRepository: Repository<Review>,
-    private readonly userService:UsersService,
-    private readonly eventService:EventsService
+    private readonly userService: UsersService,
+    private readonly eventService: EventsService,
   ) {}
 
-
-  async create(createReviewDto: CreateReviewDto, userId: number, eventId: number): Promise<Review> {
-    const user = await this.userService.findOne(userId.toString())
+  async create(
+    createReviewDto: CreateReviewDto,
+    userId: number,
+    eventId: number,
+  ): Promise<Review> {
+    const user = await this.userService.findOne(userId.toString());
     const event = await this.eventService.findOneById(eventId);
     const review = this.reviewRepository.create({
       ...createReviewDto,
@@ -31,11 +34,15 @@ export class ReviewService {
   }
 
   // Update an existing review
-  async update(id: number,userId:number , updateReviewDto:UpdateReviewDto): Promise<Review> {
+  async update(
+    id: number,
+    userId: number,
+    updateReviewDto: UpdateReviewDto,
+  ): Promise<Review> {
     const review = await this.reviewRepository.findOne({
       where: {
-        id,  // Assuming 'id' is a parameter you want to search by
-        user: { id: userId },  // Referencing the user relation's 'id'
+        id, // Assuming 'id' is a parameter you want to search by
+        user: { id: userId }, // Referencing the user relation's 'id'
       },
     });
     if (!review) {
@@ -46,8 +53,10 @@ export class ReviewService {
   }
 
   // Delete a review
-  async delete(id: number , userId:number): Promise<boolean> {
-    const review = await this.reviewRepository.findOne({ where: { id  , user : {id : userId}} });
+  async delete(id: number, userId: number): Promise<boolean> {
+    const review = await this.reviewRepository.findOne({
+      where: { id, user: { id: userId } },
+    });
     if (!review) {
       throw new NotFoundException(`Review with ID ${id} not found.`);
     }

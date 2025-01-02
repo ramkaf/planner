@@ -30,7 +30,13 @@ import { JwtToolService } from './providers/jwt.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy , PasswordService , JwtToolService],  // Added LocalStrategy
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    PasswordService,
+    JwtToolService,
+  ], // Added LocalStrategy
   exports: [AuthService],
 })
 export class AuthModule {}

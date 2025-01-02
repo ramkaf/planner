@@ -1,4 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { UserRole } from '../interfaces/user.interface';
 import { Event } from 'src/events/entities/event.entity';
 import { Review } from 'src/review/entities/review.entity';
@@ -16,7 +26,7 @@ export class User {
 
   @Column({ unique: true })
   phone: string;
-  
+
   @Column()
   password: string;
 
@@ -34,7 +44,7 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
-  
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -50,10 +60,10 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole;
-  
+
   @OneToMany(() => Event, (event) => event.user_id) // Matches the 'user' field in the Event entity
   events: Event[];
-  
+
   @ManyToMany(() => Event, (event) => event.favoriteUsers)
   @JoinTable() // JoinTable creates a junction table
   favoriteEvents: Event[];

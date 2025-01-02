@@ -7,7 +7,7 @@ export class ConfigValidationSchema {
   DB_HOST: string;
 
   @IsInt()
-  @Type(() => Number)  // Ensures that the value is transformed to a number
+  @Type(() => Number) // Ensures that the value is transformed to a number
   DB_PORT: number;
 
   @IsString()

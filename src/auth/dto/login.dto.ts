@@ -1,5 +1,15 @@
-import { IsString, IsEmail, IsOptional, IsPhoneNumber, Validate } from 'class-validator';
-import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsPhoneNumber,
+  Validate,
+} from 'class-validator';
+import {
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 
 @ValidatorConstraint({ name: 'AtLeastOneFieldExists', async: false })
 class AtLeastOneFieldExistsConstraint implements ValidatorConstraintInterface {

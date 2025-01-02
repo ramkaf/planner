@@ -21,7 +21,10 @@ export class Category {
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date; // Timestamp when the category was created.
 
-  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date; // Timestamp when the category was last updated.
 
   @Column('timestamp', { nullable: true })

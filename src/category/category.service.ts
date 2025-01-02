@@ -35,7 +35,10 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
     const category = await this.findOne(id); // Check if category exists
     Object.assign(category, updateCategoryDto);
     return this.categoryRepository.save(category);
@@ -52,7 +55,9 @@ export class CategoryService {
       where: { id, deletedAt: Not(null) },
     });
     if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found for restoration`);
+      throw new NotFoundException(
+        `Category with ID ${id} not found for restoration`,
+      );
     }
     category.deletedAt = null;
     return this.categoryRepository.save(category);

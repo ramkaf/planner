@@ -19,8 +19,8 @@ export class AuthController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     const login = loginDto.email || loginDto.username || loginDto.phone;
-    const {password} = loginDto
-    return this.authService.login({login, password});
+    const { password } = loginDto;
+    return this.authService.login({ login, password });
   }
 
   // @Get()

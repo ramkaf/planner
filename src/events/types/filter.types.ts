@@ -1,4 +1,4 @@
-import { SelectQueryBuilder } from "typeorm";
+import { SelectQueryBuilder } from 'typeorm';
 
 export type FilterOperator = 'eq' | 'gte' | 'lte' | 'in';
 

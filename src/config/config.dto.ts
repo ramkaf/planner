@@ -4,11 +4,11 @@ import { Type } from 'class-transformer';
 
 export class ConfigDto {
   @IsString()
-  @IsOptional()  // Make it optional in case we want to have defaults
+  @IsOptional() // Make it optional in case we want to have defaults
   DB_HOST: string;
 
   @IsInt()
-  @Type(() => Number)  // Ensures that the value is transformed to a number
+  @Type(() => Number) // Ensures that the value is transformed to a number
   DB_PORT: number;
 
   @IsString()

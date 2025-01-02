@@ -9,15 +9,13 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly eventService:EventsService
+    private readonly eventService: EventsService,
   ) {}
 
-  async findOne(
-    identifier: string,
-  ): Promise<User | null> {
-    const user =  await this.userRepository.findOne({
+  async findOne(identifier: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({
       where: [
-        {id : parseInt(identifier)},
+        { id: parseInt(identifier) },
         { email: identifier },
         { phone: identifier },
         { username: identifier },
@@ -26,7 +24,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }
-    return user
+    return user;
   }
 
   create(user: Partial<User>): Promise<User> {
@@ -39,18 +37,19 @@ export class UsersService {
       where: { id: userId },
       relations: ['favoriteEvents'], // Ensure the favoriteEvents relation is loaded
     });
-  
+
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
     }
-  
+
     const isFavorite = user.favoriteEvents?.some((fav) => fav.id == eventId);
     if (isFavorite)
-      user.favoriteEvents = user.favoriteEvents.filter((fav) => fav.id != eventId);
-    else
-      user.favoriteEvents = [...(user.favoriteEvents || []), event];
-      await this.userRepository.save(user);
+      user.favoriteEvents = user.favoriteEvents.filter(
+        (fav) => fav.id != eventId,
+      );
+    else user.favoriteEvents = [...(user.favoriteEvents || []), event];
+    await this.userRepository.save(user);
 
-      return true
-    }
+    return true;
   }
+}
