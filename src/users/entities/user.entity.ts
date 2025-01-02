@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { UserRole } from '../interfaces/user.interface';
 import { Event } from 'src/events/entities/event.entity';
+import { Review } from 'src/review/entities/review.entity';
 
 @Entity()
 export class User {
@@ -52,4 +53,11 @@ export class User {
   
   @OneToMany(() => Event, (event) => event.user_id) // Matches the 'user' field in the Event entity
   events: Event[];
+  
+  @ManyToMany(() => Event, (event) => event.favoriteUsers)
+  @JoinTable() // JoinTable creates a junction table
+  favoriteEvents: Event[];
+
+  @OneToMany(() => Review, (review) => review.event)
+  reviews: Review[];
 }

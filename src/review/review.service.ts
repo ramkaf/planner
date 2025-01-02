@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Review } from './entities/review.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Event } from 'src/events/entities/event.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { UsersService } from 'src/users/providers/users.service';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class ReviewService {
-  create(createReviewDto: CreateReviewDto) {
-    return 'This action adds a new review';
+  constructor(
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
+    private readonly userService:UsersService,
+    private readonly eventService:EventsService
+  ) {}
+
+
+  async create(createReviewDto: CreateReviewDto, userId: number, eventId: number): Promise<Review> {
+    const user = await this.userService.findOne(userId.toString())
+    const event = await this.eventService.findOneById(eventId);
+    const review = this.reviewRepository.create({
+      ...createReviewDto,
+      user,
+      event,
+    });
+    return this.reviewRepository.save(review);
   }
 
-  findAll() {
-    return `This action returns all review`;
+  // Update an existing review
+  async update(id: number,userId:number , updateReviewDto:UpdateReviewDto): Promise<Review> {
+    const review = await this.reviewRepository.findOne({
+      where: {
+        id,  // Assuming 'id' is a parameter you want to search by
+        user: { id: userId },  // Referencing the user relation's 'id'
+      },
+    });
+    if (!review) {
+      throw new NotFoundException(`Review with ID ${id} not found.`);
+    }
+    Object.assign(review, updateReviewDto);
+    return this.reviewRepository.save(review);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
-  }
-
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  // Delete a review
+  async delete(id: number , userId:number): Promise<boolean> {
+    const review = await this.reviewRepository.findOne({ where: { id  , user : {id : userId}} });
+    if (!review) {
+      throw new NotFoundException(`Review with ID ${id} not found.`);
+    }
+    await this.reviewRepository.remove(review);
+    return true;
   }
 }
