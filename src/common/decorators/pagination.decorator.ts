@@ -13,12 +13,14 @@ export const PaginationParams = createParamDecorator(
     const page = parseInt(req.query.page as string) || 1; // Default to page 1
     const limit = parseInt(req.query.limit as string) || 10; // Default to limit 10
     const search = (req.query.search as string) || '';
+    const sortBy = (req.query.sortBy as string) || 'id';
+    const sortOrder = (req.query.sortOrder as string)?.toLowerCase() as 'asc' | 'desc' || 'asc';
     const offset = (page - 1) * limit;
 
     // Extract filters dynamically
     const filters: Record<string, any> = {};
     for (const [key, value] of Object.entries(req.query)) {
-      if (['page', 'limit', 'search'].includes(key)) continue; // Skip pagination params
+      if (['page', 'limit', 'search' , "sortBy" , 'sortOrder'].includes(key)) continue; // Skip pagination params
       filters[key] = value;
     }
 
@@ -28,6 +30,11 @@ export const PaginationParams = createParamDecorator(
       );
     }
 
-    return { page, limit, offset, search, filters };
+    
+    if (sortOrder && !['asc', 'desc'].includes(sortOrder)) {
+      throw new BadRequestException('Sort order must be either "asc" or "desc".');
+    }
+
+    return { page, limit, offset, search, filters , sortBy , sortOrder };
   },
 );

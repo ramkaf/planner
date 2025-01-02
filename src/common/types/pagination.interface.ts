@@ -3,8 +3,11 @@ export interface Pagination {
   limit: number;
   offset: number;
   search?: string;
-  filters?: Record<string, any>; // Dynamic filters
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  filters?: Record<string, any>;
 }
+
 export interface PaginationResponse<T> {
   data: T[];
   total: number;

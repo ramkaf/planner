@@ -36,7 +36,8 @@ export class EventsService {
       .leftJoinAndSelect('event.tags', 'tags')
       .leftJoinAndSelect('event.category', 'category')
       .leftJoinAndSelect('event.author', 'author')
-      .leftJoinAndSelect('event.user_id', 'user');
+      .leftJoinAndSelect('event.user_id', 'user')
+      .leftJoinAndSelect('event.address', 'address');
   }
 
   private applySearch(
@@ -48,6 +49,19 @@ export class EventsService {
         '(event.name LIKE :search OR event.description LIKE :search)',
         { search: `%${search}%` },
       );
+    }
+  }
+  private applySort(
+    queryBuilder: SelectQueryBuilder<Event>,
+    sortBy?: string,
+    sortOrder: 'ASC' | 'DESC' = 'DESC'
+  ): void {
+    const allowedFields = ['name', 'date', 'createdAt', 'price', 'capacity', 'seen'];
+    
+    if (sortBy && allowedFields.includes(sortBy)) {
+      queryBuilder.orderBy(`event.${sortBy}`, sortOrder);
+    } else {
+      queryBuilder.orderBy('event.createdAt', 'DESC');
     }
   }
 
@@ -121,9 +135,8 @@ export class EventsService {
     return await this.eventsRepository.save(eventEntity);
   }
 
-  async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
-    const { limit, offset, search, filters } = pagination;
-
+ async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
+    const { limit, offset, search, filters, sortBy, sortOrder } = pagination;
     const queryBuilder = this.createBaseQuery();
 
     this.applySearch(queryBuilder, search);
@@ -134,7 +147,9 @@ export class EventsService {
       }
     }
 
-    queryBuilder.skip(offset).take(limit).orderBy('event.createdAt', 'DESC');
+    this.applySort(queryBuilder, sortBy, sortOrder?.toUpperCase() as 'ASC' | 'DESC');
+
+    queryBuilder.skip(offset).take(limit);
 
     const [result, total] = await queryBuilder.getManyAndCount();
     const totalPages = Math.ceil(total / limit);
@@ -149,13 +164,12 @@ export class EventsService {
   }
 
   async findOne(id: number) {
-    // Update the 'seen' field and retrieve the updated event in a single query
     const event = await this.eventsRepository
       .createQueryBuilder()
       .update()
       .set({ seen: () => 'seen + 1' })
       .where('id = :id', { id })
-      .returning('*') // Retrieve the updated event (depends on the database and ORM support)
+      .returning('*')
       .execute()
       .then((result) => result.raw[0]);
 

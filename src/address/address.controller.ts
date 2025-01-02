@@ -1,34 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { AddressService } from './address.service';
+import { Address } from './entities/address.entity';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
-@Controller('address')
+@Controller('addresses')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
+  // Create a new address
   @Post()
-  create(@Body() createAddressDto: CreateAddressDto) {
+  async create(@Body() createAddressDto: CreateAddressDto): Promise<Address> {
     return this.addressService.create(createAddressDto);
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<Address[]> {
     return this.addressService.findAll();
   }
 
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.addressService.findOne(+id);
+  async findOne(@Param('id') id: number): Promise<Address> {
+    return this.addressService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto) {
-    return this.addressService.update(+id, updateAddressDto);
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() updateAddressDto: UpdateAddressDto,
+  ): Promise<Address> {
+    return this.addressService.update(id, updateAddressDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.addressService.remove(+id);
+  async remove(@Param('id') id: number): Promise<void> {
+    return this.addressService.remove(id);
   }
 }
