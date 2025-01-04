@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   async validateCredentials(login: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(login);
+    const user = await this.usersService.findByCredentials(login);
     if (
       user &&
       (await this.passwordService.comparePasswords(password, user.password))

@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -20,22 +22,37 @@ import { PaginationParams } from 'src/common/decorators/pagination.decorator';
 import { Request as ExpressRequest } from 'express';
 import { EventStatus } from './interfaces/event.interface';
 import { ICreateEvent } from './interfaces/create.event.inerface';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
 
 @Controller('events')
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+  constructor(
+    private readonly eventsService: EventsService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   async create(
+    @UploadedFile() image: Express.Multer.File,
     @Body() createEventDto: CreateEventDto,
     @Request() req: ExpressRequest,
   ) {
     const { id: user_id } = req.user;
     const status = createEventDto.status || EventStatus.Scheduled;
+
+    let image_url = null;
+    if (image) {
+      image_url = await this.uploadService.saveFile(image);
+    }
+
     const eventCreateSchema: ICreateEvent = {
       ...createEventDto,
+      date: new Date(createEventDto.date),
       user_id,
       status,
+      image_url,
     };
 
     return this.eventsService.create(eventCreateSchema);

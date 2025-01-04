@@ -6,8 +6,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
 } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { EventStatus } from '../interfaces/event.interface';
 
 export class CreateEventDto {
@@ -20,19 +20,27 @@ export class CreateEventDto {
   description: string;
 
   @IsNotEmpty()
-  @IsDateString()
-  date: Date;
-
-  @IsNotEmpty()
   @IsString()
-  address: string;
+  @Transform(({ value }) => {
+    const date = new Date(value);
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date format');
+    }
+    return date.toISOString(); // Converts to ISO 8601
+  })
+  date: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => {
+    const transformedValue = parseFloat(value);
+    return isNaN(transformedValue) ? undefined : transformedValue;
+  })
+  @IsNumber({}, { message: 'price must be a valid number' })
   price?: number;
 
   @IsOptional()
   @IsInt()
+  @Transform(({ value }) => parseInt(value))
   capacity?: number;
 
   @IsOptional()
@@ -44,8 +52,7 @@ export class CreateEventDto {
   organizer_contact?: string;
 
   @IsOptional()
-  @IsUrl()
-  image_url?: string;
+  image?: Express.Multer.File;
 
   @IsOptional()
   @IsEnum(EventStatus)
@@ -53,14 +60,23 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsInt({ each: true })
-  tag_ids: number[]; // IDs of related tags
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((id) => parseInt(id));
+    }
+    return value;
+  })
+  tag_ids?: number[];
 
   @IsInt()
-  category_id: number; // ID of the related category
+  @Transform(({ value }) => parseInt(value))
+  category_id: number;
 
   @IsInt()
+  @Transform(({ value }) => parseInt(value))
   author_id: number;
 
   @IsInt()
-  address_id : number
+  @Transform(({ value }) => parseInt(value))
+  address_id: number;
 }

@@ -22,7 +22,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AddressModule } from './address/address.module';
 import { Address } from './address/entities/address.entity';
-
+import { UploadModule } from './upload/upload.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,7 +38,7 @@ import { Address } from './address/entities/address.entity';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User, Tag, Category, Author, Event, Review, Ticket , Address], // Define your entities here
+        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
@@ -51,6 +51,7 @@ import { Address } from './address/entities/address.entity';
     TicketModule,
     ReviewModule,
     AddressModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead

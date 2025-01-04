@@ -25,10 +25,6 @@ export class SignUpDto {
   email: string;
 
   @IsString()
-  @MinLength(4)
-  username: string;
-
-  @IsString()
   @MinLength(6)
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
@@ -48,10 +44,4 @@ export class SignUpDto {
     message: 'Phone number must be a valid Iranian number.',
   })
   phone?: string;
-
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
 }

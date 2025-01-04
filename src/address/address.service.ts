@@ -25,11 +25,14 @@ export class AddressService {
 
   // Get an address by ID
   async findOne(id: number): Promise<Address> {
-    return await this.addressRepository.findOne({where : {id}});
+    return await this.addressRepository.findOne({ where: { id } });
   }
 
   // Update an existing address
-  async update(id: number, updateAddressDto: UpdateAddressDto): Promise<Address> {
+  async update(
+    id: number,
+    updateAddressDto: UpdateAddressDto,
+  ): Promise<Address> {
     const address = await this.findOne(id);
     if (!address) {
       throw new Error('Address not found');
