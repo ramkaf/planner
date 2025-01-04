@@ -1,8 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { EventsService } from 'src/events/events.service';
+import { CompleteUserInformationDto } from '../dtos/complete-information-user.dto';
+import { ICompleteUserInformation } from '../interfaces/user.information.interface';
 
 @Injectable()
 export class UsersService {
@@ -12,10 +20,14 @@ export class UsersService {
     private readonly eventService: EventsService,
   ) {}
 
-  async findOne(identifier: string): Promise<User | null> {
+  create(user: Partial<User>): Promise<User> {
+    return this.userRepository.save(user);
+  }
+
+  async findByCredentials(identifier: string): Promise<User | null> {
     const user = await this.userRepository.findOne({
       where: [
-        { id: parseInt(identifier) },
+        // { id: parseInt(identifier) },
         { email: identifier },
         { phone: identifier },
         { username: identifier },
@@ -27,8 +39,33 @@ export class UsersService {
     return user;
   }
 
-  create(user: Partial<User>): Promise<User> {
-    return this.userRepository.save(user);
+  async userNameIsAvailable(username: string): Promise<Boolean | null> {
+    const user = await this.userRepository.findOne({
+      where: 
+        { username },
+    });
+    if (user) 
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.CONFLICT,
+          message: 'Username is already in use.',
+          error: 'Conflict',
+        },
+        HttpStatus.CONFLICT,
+      );
+    return true;
+  }
+
+  async findById(id: number): Promise<User | null> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+    return user;
   }
 
   async toggleFavorite(userId: number, eventId: number): Promise<boolean> {
@@ -51,5 +88,22 @@ export class UsersService {
     await this.userRepository.save(user);
 
     return true;
+  }
+
+  async completeInformation(
+    userId: number,
+    userInformationSchema: ICompleteUserInformation,
+  ): Promise<User> {
+    const user = await this.findById(userId);
+
+    if (userInformationSchema.username) {
+      const usernameIsAvailable = await this.userNameIsAvailable(
+        userInformationSchema.username,
+      );
+      if (usernameIsAvailable) {
+        Object.assign(user, userInformationSchema);
+        return await this.userRepository.save(user);
+      }
+    }
   }
 }

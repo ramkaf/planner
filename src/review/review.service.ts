@@ -23,7 +23,7 @@ export class ReviewService {
     userId: number,
     eventId: number,
   ): Promise<Review> {
-    const user = await this.userService.findOne(userId.toString());
+    const user = await this.userService.findById(userId);
     const event = await this.eventService.findOneById(eventId);
     const review = this.reviewRepository.create({
       ...createReviewDto,

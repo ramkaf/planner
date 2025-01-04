@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { AddressService } from './address.service';
 import { Address } from './entities/address.entity';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -18,7 +26,6 @@ export class AddressController {
   async findAll(): Promise<Address[]> {
     return this.addressService.findAll();
   }
-
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<Address> {

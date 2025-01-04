@@ -1,5 +1,11 @@
-import { Event } from "src/events/entities/event.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Event } from 'src/events/entities/event.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('address')
 export class Address {
@@ -16,6 +22,7 @@ export class Address {
   province: string;
 
   @Column('varchar', { nullable: true })
+  @Index()
   city: string;
 
   @Column('varchar', { nullable: true })

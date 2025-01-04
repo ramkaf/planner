@@ -90,8 +90,7 @@ export class Event {
   @OneToMany(() => Review, (review) => review.event)
   reviews: Review[];
 
-  // Correct relationship with Address
   @ManyToOne(() => Address, (address) => address.events, { nullable: true })
-  @JoinColumn({ name: 'address_id' })  // The column name in Event for the address
-  address: Address; // Foreign key linking to the Address entity
+  @JoinColumn({ name: 'address_id' })
+  address: Address;
 }

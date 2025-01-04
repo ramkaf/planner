@@ -21,7 +21,6 @@ import { Category } from 'src/category/entities/category.entity';
 import { Author } from 'src/author/entities/author.entity';
 import { Tag } from 'src/tag/entities/tag.entity';
 import { EVENT_FILTER_CONFIG } from './constants/filter-config';
-import { log } from 'node:console';
 import { Address } from 'src/address/entities/address.entity';
 
 @Injectable()
@@ -30,6 +29,7 @@ export class EventsService {
     @InjectRepository(Event)
     private readonly eventsRepository: Repository<Event>,
   ) {}
+
   private createBaseQuery(): SelectQueryBuilder<Event> {
     return this.eventsRepository
       .createQueryBuilder('event')
@@ -39,7 +39,6 @@ export class EventsService {
       .leftJoinAndSelect('event.user_id', 'user')
       .leftJoinAndSelect('event.address', 'address');
   }
-
   private applySearch(
     queryBuilder: SelectQueryBuilder<Event>,
     search: string,
@@ -54,10 +53,17 @@ export class EventsService {
   private applySort(
     queryBuilder: SelectQueryBuilder<Event>,
     sortBy?: string,
-    sortOrder: 'ASC' | 'DESC' = 'DESC'
+    sortOrder: 'ASC' | 'DESC' = 'DESC',
   ): void {
-    const allowedFields = ['name', 'date', 'createdAt', 'price', 'capacity', 'seen'];
-    
+    const allowedFields = [
+      'name',
+      'date',
+      'createdAt',
+      'price',
+      'capacity',
+      'seen',
+    ];
+
     if (sortBy && allowedFields.includes(sortBy)) {
       queryBuilder.orderBy(`event.${sortBy}`, sortOrder);
     } else {
@@ -111,7 +117,6 @@ export class EventsService {
         break;
     }
   }
-
   private parseFilterValue(value: any, field: string): any {
     // Add parsing logic for different field types
     if (['date', 'createdAt', 'updatedAt'].includes(field)) {
@@ -127,15 +132,15 @@ export class EventsService {
     const eventEntity: DeepPartial<Event> = {
       ...createEventSchema,
       user_id: { id: createEventSchema.user_id } as User,
-      address : {id : createEventSchema.address_id} as Address ,
+      address: { id: createEventSchema.address_id } as Address,
       category: { id: createEventSchema.category_id } as Category,
       author: { id: createEventSchema.author_id } as Author,
-      tags: createEventSchema.tag_ids?.map((id) => ({ id }) as Tag), // Map tag IDs to Tag objects
+      tags: createEventSchema.tag_ids?.map((id) => ({ id }) as Tag),
     };
     return await this.eventsRepository.save(eventEntity);
   }
 
- async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
+  async findAll(pagination: Pagination): Promise<PaginationResponse<Event>> {
     const { limit, offset, search, filters, sortBy, sortOrder } = pagination;
     const queryBuilder = this.createBaseQuery();
 
@@ -147,7 +152,11 @@ export class EventsService {
       }
     }
 
-    this.applySort(queryBuilder, sortBy, sortOrder?.toUpperCase() as 'ASC' | 'DESC');
+    this.applySort(
+      queryBuilder,
+      sortBy,
+      sortOrder?.toUpperCase() as 'ASC' | 'DESC',
+    );
 
     queryBuilder.skip(offset).take(limit);
 
@@ -164,14 +173,17 @@ export class EventsService {
   }
 
   async findOne(id: number) {
-    const event = await this.eventsRepository
+    // Update seen count
+    await this.eventsRepository
       .createQueryBuilder()
       .update()
       .set({ seen: () => 'seen + 1' })
       .where('id = :id', { id })
-      .returning('*')
-      .execute()
-      .then((result) => result.raw[0]);
+      .execute();
+
+    const event = await this.createBaseQuery()
+      .where('event.id = :id', { id })
+      .getOne();
 
     if (!event) {
       throw new Error(`Event with ID ${id} not found.`);
@@ -180,20 +192,25 @@ export class EventsService {
     return event;
   }
   async findOneById(id: number) {
-    const event = await this.eventsRepository.findOneBy({ id });
+    const event = await this.createBaseQuery()
+      .where('event.id = :id', { id })
+      .getOne();
+
     if (!event) {
       throw new BadRequestException(`Event with ID ${id} not found.`);
     }
+
     return event;
   }
-
   async update(id: number, updateEventDto: UpdateEventDto) {
-    const repo = await this.eventsRepository.update(id, {...updateEventDto , 
-    address: updateEventDto.address_id ? { id: updateEventDto.address_id } : null
+    const repo = await this.eventsRepository.update(id, {
+      ...updateEventDto,
+      address: updateEventDto.address_id
+        ? { id: updateEventDto.address_id }
+        : null,
     });
     return await this.findOne(id);
   }
-
   async remove(id: number): Promise<void | boolean> {
     const result = await this.eventsRepository.delete(id);
 

@@ -21,19 +21,19 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true , nullable : true })
   username: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true  , nullable:true})
   phone: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({nullable : true})
   firstName: string;
 
-  @Column()
+  @Column({nullable : true})
   lastName: string;
 
   @Column({ nullable: true })
