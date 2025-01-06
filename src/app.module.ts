@@ -1,7 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm'; // Import DataSource
 import databaseConfig from './config/database.config'; // Import the database config
 import { CustomLoggerService } from './utils/logger.service'; // Import the custom logger
 import { Event } from './events/entities/event.entity';
@@ -19,15 +18,23 @@ import { Ticket } from './ticket/entities/ticket.entity';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AddressModule } from './address/address.module';
 import { Address } from './address/entities/address.entity';
 import { UploadModule } from './upload/upload.module';
+import { MailerModule } from './mailer/mailer.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { Mailer } from './mailer/entities/mailer.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [databaseConfig], // Load the configuration from the database.config.ts
       isGlobal: true, // Make the configuration accessible globally
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/static', // The base URL from which static files are served
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule], // Import ConfigModule so ConfigService is available
@@ -38,12 +45,13 @@ import { UploadModule } from './upload/upload.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address], // Define your entities here
+        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
     }),
     AuthModule,
+    MailerModule,
     EventsModule,
     CategoryModule,
     TagModule,
@@ -56,4 +64,6 @@ import { UploadModule } from './upload/upload.module';
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
+
+
 export class AppModule {}

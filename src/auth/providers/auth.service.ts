@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +16,9 @@ import { PasswordService } from './password.service';
 import { UsersService } from 'src/users/providers/users.service';
 import { JwtToolService } from './jwt.service';
 import { ILogin } from '../interfaces/login.interface';
+import { EmailService } from 'src/mailer/providers/mailer.service';
+import { ITemplateEmailConfigVariables } from 'src/mailer/interfaces/mailer.interface';
+import { CompleteSignupDto } from '../dto/complete-signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +28,7 @@ export class AuthService {
     private readonly jwtToolService: JwtToolService,
     private readonly passwordService: PasswordService,
     private readonly usersService: UsersService,
+    private readonly mailerService:EmailService
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
@@ -40,7 +45,6 @@ export class AuthService {
       return { user, token };
     } catch (error) {
       if (error.code === '23505') {
-        // Unique constraint violation
         throw new UnauthorizedException(
           'User with this email/username/phone already exists',
         );
@@ -73,5 +77,16 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async completeSignUp(id:number , completeSignupDto:CompleteSignupDto){
+    const user = await this.usersService.findById(id)
+    if (user){
+      const updatedUserSchema = Object.assign(user , completeSignupDto)
+      const updatedUser = await this.usersService.save(updatedUserSchema)
+      this.mailerService.sendWelcomeEmail(updatedUser)
+      return user
+    }
+    return new ForbiddenException ()
   }
 }

@@ -12,6 +12,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { PasswordService } from './providers/password.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtToolService } from './providers/jwt.service';
+import { MailerModule } from 'src/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtToolService } from './providers/jwt.service';
       }),
       inject: [ConfigService],
     }),
+    MailerModule
   ],
   controllers: [AuthController],
   providers: [
@@ -35,7 +37,7 @@ import { JwtToolService } from './providers/jwt.service';
     LocalStrategy,
     JwtStrategy,
     PasswordService,
-    JwtToolService,
+    JwtToolService
   ], // Added LocalStrategy
   exports: [AuthService],
 })

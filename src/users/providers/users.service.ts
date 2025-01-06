@@ -20,7 +20,7 @@ export class UsersService {
     private readonly eventService: EventsService,
   ) {}
 
-  create(user: Partial<User>): Promise<User> {
+  save(user: Partial<User>): Promise<User> {
     return this.userRepository.save(user);
   }
 
