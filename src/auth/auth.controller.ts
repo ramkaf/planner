@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
 import { CompleteSignupDto } from './dto/complete-signup.dto';
 import { Request } from 'express';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,9 +26,16 @@ export class AuthController {
     return this.authService.login({ login, password });
   }
 
-  @Post('complete-signup')
-  ComplateSignUp(@Body() completeSignupDto: CompleteSignupDto , @Req() req:Request) {
+  @Get('email-verification')
+  async ComplateSignUp(@Req() req:Request) {
     const {id} = req.user
-    return this.authService.completeSignUp(id , completeSignupDto)
+    return await this.authService.emailVerification(id)
   }
+
+  @Post('email-verification')
+  async VerifyEmail(@Body() verifyEmailDto:VerifyEmailDto ,  @Req() req:Request) {
+    const {id} = req.user
+    return await this.authService.verifyEmail(id , verifyEmailDto)
+  }
+  
 }
