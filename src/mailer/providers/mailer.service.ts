@@ -168,7 +168,7 @@ export class EmailService {
     const {email:to} = user
     try {
       const variables :ITemplateEmailConfigVariables['verification'] = {
-        name: `${user.firstName}`,
+        name: `${user.firstName ? user.firstName : 'dear'}`,
         code,
         year: new Date().getFullYear(), 
       }

@@ -55,6 +55,9 @@ export class User {
   @Column({ nullable: true })
   lastLogin?: Date;
 
+  @Column({default : false , type: 'boolean'})
+  isEmailVerified : Boolean
+  
   @Column({
     type: 'enum',
     enum: UserRole,

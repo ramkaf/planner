@@ -17,8 +17,10 @@ import { UsersService } from 'src/users/providers/users.service';
 import { JwtToolService } from './jwt.service';
 import { ILogin } from '../interfaces/login.interface';
 import { EmailService } from 'src/mailer/providers/mailer.service';
-import { ITemplateEmailConfigVariables } from 'src/mailer/interfaces/mailer.interface';
 import { CompleteSignupDto } from '../dto/complete-signup.dto';
+import { VerificationService } from 'src/users/providers/verification.service';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
+
 
 @Injectable()
 export class AuthService {
@@ -28,6 +30,7 @@ export class AuthService {
     private readonly jwtToolService: JwtToolService,
     private readonly passwordService: PasswordService,
     private readonly usersService: UsersService,
+    private readonly verficationService: VerificationService,
     private readonly mailerService:EmailService
   ) {}
 
@@ -88,5 +91,23 @@ export class AuthService {
       return user
     }
     return new ForbiddenException ()
+  }
+
+  async emailVerification(id:number){
+    const user = await this.usersService.findById(id)
+    await this.verficationService.deletePendingVerificationEmails(id)
+    const emailverfication = await  this.verficationService.prepareVerificationSchemaBeforeSending(id)
+    this.verficationService.sendVerificationEmail(user , emailverfication)
+    return true
+  }
+
+  async verifyEmail(userId: number, verifyEmailDto: VerifyEmailDto): Promise<Boolean> {
+    const {code} = verifyEmailDto
+    const emailverification = await this.verficationService.findVerification(userId, code)
+
+    if (!emailverification || (emailverification && emailverification.expiresAt < new Date ()))
+      throw new BadRequestException('The verification link has expired or is invalid');
+      
+    return await this.verficationService.saveEmailVerificationResult(emailverification);
   }
 }
