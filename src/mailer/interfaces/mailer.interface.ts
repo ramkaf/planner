@@ -5,42 +5,46 @@ export interface ISendMailOptions {
   html?: string; // Name of the HTML template file
   variables?: Record<string, string>; // Variables to replace in the HTML template
 }
+export interface ITemplateEmailConfigVariables {
+  purchase: {
+    name: string;
+    product: string;
+    cart: string;
+  };
+  'reset-password': {
+    name: string;
+    resetUrl: string;
+    year: number;
+  };
+  verification: {
+    name: string;
+    code: string;
+    year: number;
+  };
+  welcome: {
+    title: string;
+    name: string;
+    year: number;
+  };
+}
 
-export interface PurchaseEmailVariables {
+export interface IPurchaseEmailVariables {
   name: string;      // Required for greeting
   product: string;   // Required for product details
   cart: string;      // Required for cart link URL
 }
-
-// Password Reset Email
-export interface PasswordResetVariables {
+export interface IPasswordResetVariables {
   name: string;      // Required for greeting
   resetUrl: string;  // Required for password reset link
   year: number;      // Required for copyright
 }
-
-// Email Verification
-export interface VerificationVariables {
-  name: string;      // Required for greeting
-  code: string;      // Required for verification code
-  year: number;      // Required for copyright
+export interface IVerificationVariables {
+  name: string;    
+  code: string;      
+  year: number;      
 }
-
-// Welcome Email
-export interface WelcomeVariables {
+export interface IWelcomeVariables {
   title: string;     
   name: string;      
   year: number;    
 }
-
-
-  export enum EmailType {
-    PasswordReset = 'PasswordReset', 
-    Welcome = 'Welcome',
-    Newsletter = 'Newsletter',  
-    AccountVerification = 'AccountVerification', 
-    Promotional = 'Promotional',   
-    FeedbackRequest = 'FeedbackRequest', 
-    SubscriptionReminder = 'SubscriptionReminder', 
-    SupportTicket = 'SupportTicket',
-  }

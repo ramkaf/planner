@@ -24,6 +24,7 @@ import { UploadModule } from './upload/upload.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { Mailer } from './mailer/entities/mailer.entity';
 
 @Module({
   imports: [
@@ -44,7 +45,7 @@ import { join } from 'path';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address], // Define your entities here
+        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables

@@ -12,6 +12,7 @@ import {
 import { UserRole } from '../interfaces/user.interface';
 import { Event } from 'src/events/entities/event.entity';
 import { Review } from 'src/review/entities/review.entity';
+import { Mailer } from 'src/mailer/entities/mailer.entity';
 
 @Entity()
 export class User {
@@ -61,6 +62,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({type : 'varchar' , default : null})
+  referrer :  string
+  
   @OneToMany(() => Event, (event) => event.user_id) // Matches the 'user' field in the Event entity
   events: Event[];
 
@@ -70,4 +74,7 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.event)
   reviews: Review[];
+
+  @OneToMany(() => Mailer, (mailer) => mailer.user)
+  mailers: Mailer[]; // Defines the One-to-Many relationship with Mailer
 }

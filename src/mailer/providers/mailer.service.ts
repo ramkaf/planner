@@ -6,34 +6,16 @@ import { Mailer } from '../entities/mailer.entity';
 import { ConfigurationService } from 'src/config/configuration.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { ISendMailOptions } from '../interfaces/mailer.interface';
+import { ISendMailOptions, ITemplateEmailConfigVariables } from '../interfaces/mailer.interface';
 import * as handlebars from 'handlebars';
+import { EmailStatus, EmailType } from '../interfaces/mailer.enum';
+import { User } from 'src/users/entities/user.entity';
 
-interface TemplateVariables {
-  purchase: {
-    name: string;
-    product: string;
-    cart: string;
-  };
-  'reset-password': {
-    name: string;
-    resetUrl: string;
-    year: number;
-  };
-  verification: {
-    name: string;
-    code: string;
-    year: number;
-  };
-  welcome: {
-    title: string;
-    name: string;
-    year: number;
-  };
-}
+
 
 @Injectable()
 export class EmailService {
+
   private transporter;
   private defaultFromEmail: string;
   private readonly templateRequirements: Record<string, string[]> = {
@@ -45,7 +27,7 @@ export class EmailService {
 
   constructor(
     @InjectRepository(Mailer)
-    private readonly mailRepository: Repository<Mailer>,
+    @InjectRepository(Mailer) private readonly mailerRepository: Repository<Mailer>,
     private readonly configService: ConfigurationService,
   ) {
     const emailConfig = this.configService.emailConfig;
@@ -61,7 +43,7 @@ export class EmailService {
     this.defaultFromEmail = emailConfig.defaultFromEmail;
   }
 
-  private validateTemplateVariables(
+  private validateTemplateEmailConfigVariables(
     templateName: string, 
     variables: Record<string, string | number>
   ): void {
@@ -83,7 +65,7 @@ export class EmailService {
     variables: Record<string, string | number>
   ): Promise<string> {
     try {
-      this.validateTemplateVariables(fileName, variables);
+      this.validateTemplateEmailConfigVariables(fileName, variables);
 
       const filePath = path.join(__dirname, '../../../public/html', fileName);
       const htmlContent = await fs.readFile(filePath, 'utf-8');
@@ -100,6 +82,16 @@ export class EmailService {
       console.error(`Error processing HTML template ${fileName}:`, error);
       throw error;
     }
+  }
+
+  private async logEmails (to:string , emailType:EmailType , status : EmailStatus , errorMessage:null ){
+    const mailSchema = this.mailerRepository.create({
+      to,
+      status,
+      emailType,
+      errorMessage
+    })
+    await this.mailerRepository.save(mailSchema)
   }
 
   async sendEmail(options: ISendMailOptions): Promise<boolean> {
@@ -127,49 +119,98 @@ export class EmailService {
     }
   }
 
-  // Helper methods with proper type conversion
-  async sendPurchaseConfirmation(to: string, variables: TemplateVariables['purchase']) {
-    return this.sendEmail({
-      to,
-      subject: 'Purchase Confirmation',
-      html: 'purchase.html',
-      variables: variables as Record<string, string>
-    });
-  }
-
-  async sendPasswordReset(to: string, variables: TemplateVariables['reset-password']) {
-    return this.sendEmail({
-      to,
-      subject: 'Password Reset Request',
-      html: 'reset-password.html',
-      variables: {
-        ...variables,
-        year: variables.year.toString()
+  async sendPurchaseConfirmation(user: User) {
+    const {email:to} = user
+    try {
+      const variables :ITemplateEmailConfigVariables['purchase'] = {
+        name: `${user.firstName}`,
+        product: '',
+        cart: `localhost:${process.env.PORT}/user/cart`
       }
-    });
+      const mail = this.sendEmail({
+        to,
+        subject: 'Purchase Confirmation',
+        html: 'purchase.html',
+        variables: variables as Record<string, string>
+      });
+      await this.logEmails(to ,EmailType.Purchase , EmailStatus.success , null)
+      return mail
+    } catch (error) {
+      await this.logEmails(to ,EmailType.Purchase , EmailStatus.error , error.message)
+    }
   }
-
-  async sendVerificationEmail(to: string, variables: TemplateVariables['verification']) {
-    return this.sendEmail({
-      to,
-      subject: 'Email Verification',
-      html: 'verification.html',
-      variables: {
-        ...variables,
-        year: variables.year.toString()
+  async sendPasswordReset(user:User , resetToken:string) {
+    const {email:to} = user
+    try {
+      const variables :ITemplateEmailConfigVariables['reset-password'] = {
+        name: `${user.firstName}`,
+        year: new Date().getFullYear(),
+        resetUrl: `localhost:${process.env.PORT}/auth/reset-password?token=${resetToken}`
       }
-    });
+
+      const mail = await this.sendEmail({
+        to,
+        subject: 'Password Reset Request',
+        html: 'reset-password.html',
+        variables: {
+          ...variables,
+          year: variables.year.toString()
+        }
+      });
+      await this.logEmails(to, EmailType.PasswordReset, EmailStatus.success, null);
+      return mail;
+    } catch (error) {
+      await this.logEmails(to, EmailType.PasswordReset, EmailStatus.error, error.message);
+      throw error;
+    }
   }
-
-  async sendWelcomeEmail(to: string, variables: TemplateVariables['welcome']) {
-    return this.sendEmail({
-      to,
-      subject: variables.title || 'Welcome!',
-      html: 'welcome.html',
-      variables: {
-        ...variables,
-        year: variables.year.toString()
+  async sendVerificationEmail(user:User , code:string) {
+    const {email:to} = user
+    try {
+      const variables :ITemplateEmailConfigVariables['verification'] = {
+        name: `${user.firstName}`,
+        code,
+        year: new Date().getFullYear(), 
       }
-    });
+
+      const mail = await this.sendEmail({
+        to,
+        subject: 'Email Verification',
+        html: 'verification.html',
+        variables: {
+          ...variables,
+          year: variables.year.toString()
+        }
+      });
+      this.logEmails(to, EmailType.AccountVerification, EmailStatus.success, null);
+      return mail;
+    } catch (error) {
+      await this.logEmails(to, EmailType.AccountVerification, EmailStatus.error, error.message);
+      throw error;
+    }
+  }
+  async sendWelcomeEmail(user:User) {
+    const {email:to} = user
+    const variables :ITemplateEmailConfigVariables['welcome'] = {
+      title: 'خوش امدید',
+      name: `${user.firstName} ${user.lastName}`,
+      year: new Date().getFullYear(), 
+    }
+    try {
+      const mail = await this.sendEmail({
+        to,
+        subject: variables.title || 'Welcome!',
+        html: 'welcome.html',
+        variables: {
+          ...variables,
+          year: variables.year.toString()
+        }
+      });
+      await this.logEmails(to, EmailType.Welcome, EmailStatus.success, null);
+      return mail;
+    } catch (error) {
+      await this.logEmails(to, EmailType.Welcome, EmailStatus.error, error.message);
+      throw error;
+    }
   }
 }
