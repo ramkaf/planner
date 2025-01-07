@@ -1,16 +1,11 @@
 import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
+  forwardRef,
+  Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { EventsService } from 'src/events/events.service';
-import { CompleteUserInformationDto } from '../dtos/complete-information-user.dto';
-import { ICompleteUserInformation } from '../interfaces/user.information.interface';
 import { generateRandomSixDigit, generateSecureRandomToken } from 'src/common/utils/base.utils';
 import { EmailVerification } from '../entities/email-verification.entity';
 import { EmailService } from 'src/mailer/providers/mailer.service';
@@ -22,7 +17,9 @@ export class VerificationService {
     @InjectRepository(EmailVerification)
     private readonly emailVerificationRepository: Repository<EmailVerification>,
     private readonly mailerService:EmailService,
-    private readonly userService:UsersService
+    @Inject(forwardRef(() => UsersService))
+    private readonly userService: UsersService,
+    // private readonly userService:UsersService
   ) {}
 
   save(emailVerificationService: Partial<EmailVerification>): Promise<EmailVerification> {

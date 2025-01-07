@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './providers/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from 'src/users/entities/user.entity';
@@ -13,10 +13,13 @@ import { PasswordService } from './providers/password.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtToolService } from './providers/jwt.service';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { PasswordReset } from 'src/users/entities/password-reset.entity';
+import { PasswordController } from './controllers/password.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([PasswordReset]),
     PassportModule,
     UsersModule,
     JwtModule.registerAsync({
@@ -31,14 +34,14 @@ import { MailerModule } from 'src/mailer/mailer.module';
     }),
     MailerModule
   ],
-  controllers: [AuthController],
+  controllers: [AuthController , PasswordController],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
     PasswordService,
     JwtToolService
-  ], // Added LocalStrategy
+  ], 
   exports: [AuthService],
 })
 export class AuthModule {}

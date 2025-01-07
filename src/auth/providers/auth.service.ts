@@ -5,12 +5,9 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { SignUpDto } from '../dto/signup.dto';
-import { LoginDto } from '../dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
 import { PasswordService } from './password.service';
 import { UsersService } from 'src/users/providers/users.service';
@@ -19,8 +16,6 @@ import { ILogin } from '../interfaces/login.interface';
 import { EmailService } from 'src/mailer/providers/mailer.service';
 import { CompleteSignupDto } from '../dto/complete-signup.dto';
 import { VerificationService } from 'src/users/providers/verification.service';
-import { VerifyEmailDto } from '../dto/verify-email.dto';
-
 
 @Injectable()
 export class AuthService {
@@ -91,23 +86,5 @@ export class AuthService {
       return user
     }
     return new ForbiddenException ()
-  }
-
-  async emailVerification(id:number){
-    const user = await this.usersService.findById(id)
-    await this.verficationService.deletePendingVerificationEmails(id)
-    const emailverfication = await  this.verficationService.prepareVerificationSchemaBeforeSending(id)
-    this.verficationService.sendVerificationEmail(user , emailverfication)
-    return true
-  }
-
-  async verifyEmail(userId: number, verifyEmailDto: VerifyEmailDto): Promise<Boolean> {
-    const {code} = verifyEmailDto
-    const emailverification = await this.verficationService.findVerification(userId, code)
-
-    if (!emailverification || (emailverification && emailverification.expiresAt < new Date ()))
-      throw new BadRequestException('The verification link has expired or is invalid');
-      
-    return await this.verficationService.saveEmailVerificationResult(emailverification);
   }
 }

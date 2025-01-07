@@ -145,7 +145,7 @@ export class EmailService {
       const variables :ITemplateEmailConfigVariables['reset-password'] = {
         name: `${user.firstName}`,
         year: new Date().getFullYear(),
-        resetUrl: `localhost:${process.env.PORT}/auth/reset-password?token=${resetToken}`
+        resetUrl: `http://localhost:${process.env.PORT}/auth/password-reset?token=${resetToken}`
       }
 
       const mail = await this.sendEmail({

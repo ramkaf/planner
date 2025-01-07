@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './users.controller';
+import { UsersController } from './controllers/users.controller';
 import { UsersService } from './providers/users.service';
 import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { UploadModule } from 'src/upload/upload.module';
 import { VerificationService } from './providers/verification.service';
 import { EmailVerification } from './entities/email-verification.entity';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { VerificationController } from './controllers/verification.controller';
 
 
 @Module({
@@ -21,7 +22,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
       destination: 'public/uploads/users',
     }),
   ],
-  controllers: [UsersController],
+  controllers: [UsersController , VerificationController],
   providers: [UsersService , VerificationService],
   exports: [UsersService , VerificationService],
 })

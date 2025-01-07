@@ -3,20 +3,18 @@ import {
   Controller,
   Param,
   Patch,
-  Post,
   Req,
   Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { UsersService } from './providers/users.service';
-import { CompleteUserInformationDto } from './dtos/complete-information-user.dto';
-import { User } from './entities/user.entity';
+import { UsersService } from './../providers/users.service';
+import { CompleteUserInformationDto } from './../dtos/complete-information-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateEventDto } from 'src/events/dto/create-event.dto';
 import { Request as ExpressRequest } from 'express';
 import { UploadService } from 'src/upload/upload.service';
-import { ICompleteUserInformation } from './interfaces/user.information.interface';
+import { ICompleteUserInformation } from './../interfaces/user.information.interface';
+
 @Controller('users')
 export class UsersController {
   constructor(
