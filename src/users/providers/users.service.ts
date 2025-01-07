@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,8 +11,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { EventsService } from 'src/events/events.service';
-import { CompleteUserInformationDto } from '../dtos/complete-information-user.dto';
 import { ICompleteUserInformation } from '../interfaces/user.information.interface';
+import { VerificationService } from './verification.service';
+import { VerifyEmailDto } from '../dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +21,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly eventService: EventsService,
+    @Inject(forwardRef(() => VerificationService))
+    private readonly verficationService:VerificationService,
   ) {}
 
   save(user: Partial<User>): Promise<User> {
@@ -105,5 +110,23 @@ export class UsersService {
         return await this.userRepository.save(user);
       }
     }
+  }
+
+  async emailVerification(id:number){
+    const user = await this.findById(id)
+    await this.verficationService.deletePendingVerificationEmails(id)
+    const emailverfication = await  this.verficationService.prepareVerificationSchemaBeforeSending(id)
+    this.verficationService.sendVerificationEmail(user , emailverfication)
+    return true
+  }
+
+  async verifyEmail(userId: number, verifyEmailDto: VerifyEmailDto): Promise<Boolean> {
+    const {code} = verifyEmailDto
+    const emailverification = await this.verficationService.findVerification(userId, code)
+
+    if (!emailverification || (emailverification && emailverification.expiresAt < new Date ()))
+      throw new BadRequestException('The verification link has expired or is invalid');
+      
+    return await this.verficationService.saveEmailVerificationResult(emailverification);
   }
 }
