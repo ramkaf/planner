@@ -10,9 +10,9 @@ import {
   HttpStatus,
   ParseIntPipe,
 } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryService } from './../providers/category.service';
+import { CreateCategoryDto } from './../dto/create-category.dto';
+import { UpdateCategoryDto } from './../dto/update-category.dto';
 
 @Controller('categories')
 export class CategoryController {

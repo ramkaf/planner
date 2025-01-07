@@ -9,9 +9,9 @@ import {
   BadRequestException,
   Req,
 } from '@nestjs/common';
-import { ReviewService } from './review.service';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewService } from './../providers/review.service';
+import { CreateReviewDto } from './../dto/create-review.dto';
+import { UpdateReviewDto } from './../dto/update-review.dto';
 
 @Controller('reviews')
 export class ReviewController {

@@ -10,20 +10,20 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-import { EventsService } from './events.service';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
-import { Event } from './entities/event.entity';
+import { EventsService } from './../providers/events.service';
+import { CreateEventDto } from './../dto/create-event.dto';
+import { UpdateEventDto } from './../dto/update-event.dto';
+import { Event } from './../entities/event.entity';
 import {
   Pagination,
   PaginationResponse,
 } from 'src/common/types/pagination.interface';
 import { PaginationParams } from 'src/common/decorators/pagination.decorator';
 import { Request as ExpressRequest } from 'express';
-import { EventStatus } from './interfaces/event.interface';
-import { ICreateEvent } from './interfaces/create.event.inerface';
+import { EventStatus } from './../interfaces/event.interface';
+import { ICreateEvent } from './../interfaces/create.event.inerface';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadService } from 'src/upload/upload.service';
+import { UploadService } from 'src/upload/providers/upload.service';
 
 @Controller('events')
 export class EventsController {

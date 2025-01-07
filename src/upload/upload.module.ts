@@ -1,7 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { UploadService } from './upload.service';
-import { UploadController } from './upload.controller';
+import { UploadService } from './providers/upload.service';
 import { diskStorage } from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
@@ -54,7 +53,6 @@ export class UploadModule {
         },
         UploadService,
       ],
-      controllers: [UploadController],
       exports: [UploadService],
     };
   }

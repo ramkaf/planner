@@ -12,8 +12,8 @@ import { UsersService } from './../providers/users.service';
 import { CompleteUserInformationDto } from './../dtos/complete-information-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request as ExpressRequest } from 'express';
-import { UploadService } from 'src/upload/upload.service';
 import { ICompleteUserInformation } from './../interfaces/user.information.interface';
+import { UploadService } from 'src/upload/providers/upload.service';
 
 @Controller('users')
 export class UsersController {

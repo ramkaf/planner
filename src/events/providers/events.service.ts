@@ -1,26 +1,22 @@
 import { BadRequestException, Injectable, Request } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
+import { UpdateEventDto } from './../dto/update-event.dto';
 import {
   DeepPartial,
-  LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
-import { Event } from './entities/event.entity';
+import { Event } from './../entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Pagination,
   PaginationResponse,
 } from 'src/common/types/pagination.interface';
-import { ICreateEvent } from './interfaces/create.event.inerface';
+import { ICreateEvent } from './../interfaces/create.event.inerface';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { Author } from 'src/author/entities/author.entity';
 import { Tag } from 'src/tag/entities/tag.entity';
-import { EVENT_FILTER_CONFIG } from './constants/filter-config';
+import { EVENT_FILTER_CONFIG } from './../constants/filter-config';
 import { Address } from 'src/address/entities/address.entity';
 
 @Injectable()

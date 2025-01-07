@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { Address } from './entities/address.entity';
-import { UpdateAddressDto } from './dto/update-address.dto';
+import { CreateAddressDto } from './../dto/create-address.dto';
+import { Address } from './../entities/address.entity';
+import { UpdateAddressDto } from './../dto/update-address.dto';
 
 @Injectable()
 export class AddressService {
