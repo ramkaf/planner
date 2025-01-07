@@ -28,7 +28,7 @@ export class PasswordReset {
 
   @BeforeInsert()
   setExpiresAt() {
-    const expirationTime = 10 * 60 * 1000; 
+    const expirationTime =  10 * 60 * 1000;
     this.expiresAt = new Date(Date.now() + expirationTime);
   }
 }

@@ -13,10 +13,13 @@ import { PasswordService } from './providers/password.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtToolService } from './providers/jwt.service';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { PasswordReset } from 'src/users/entities/password-reset.entity';
+import { PasswordController } from './controllers/password.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([PasswordReset]),
     PassportModule,
     UsersModule,
     JwtModule.registerAsync({
@@ -31,7 +34,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
     }),
     MailerModule
   ],
-  controllers: [AuthController],
+  controllers: [AuthController , PasswordController],
   providers: [
     AuthService,
     LocalStrategy,
