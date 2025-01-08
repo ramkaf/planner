@@ -7,10 +7,10 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { AddressService } from './address.service';
-import { Address } from './entities/address.entity';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { UpdateAddressDto } from './dto/update-address.dto';
+import { AddressService } from './../providers/address.service';
+import { Address } from './../entities/address.entity';
+import { CreateAddressDto } from './../dto/create-address.dto';
+import { UpdateAddressDto } from './../dto/update-address.dto';
 
 @Controller('addresses')
 export class AddressController {
