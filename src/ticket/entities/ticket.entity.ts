@@ -15,14 +15,10 @@ import {
   
     @Column({ type: 'varchar', unique: true })
     ticketNumber: string; 
+    
     @Column({ type: 'float', nullable: true })
     price: number;
   
-    @Column({ default: false })
-    isUsed: boolean;
-  
-    @Column({ type: 'timestamp', nullable: true })
-    usedAt: Date | null; 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
   

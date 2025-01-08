@@ -1,19 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { TicketsService } from '../providers/ticket.service';
+import { Request } from 'express';
 
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
-  async create(@Body() createTicketDto: CreateTicketDto) {
-    return await this.ticketsService.create(createTicketDto);
+  async create(@Body() createTicketDto: CreateTicketDto , @Req() req:Request) {
+    const {id:userId} = req.user
+    return await this.ticketsService.create(createTicketDto,userId);
   }
 
   @Get()
   async findAll() {
-    return await this.ticketsService.findAll();
+    return await this.ticketsService.findTickets();
   }
 
   @Get(':id')

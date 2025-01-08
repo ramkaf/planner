@@ -3,21 +3,44 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from '../entities/ticket.entity';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
+import { generateRandomDigit } from 'src/common/utils/base.utils';
+import { EventsService } from 'src/events/providers/events.service';
 
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
+    private readonly eventsService:EventsService
   ) {}
 
-  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const ticket = this.ticketRepository.create(createTicketDto);
-    return await this.ticketRepository.save(ticket);
+  async create(createTicketDto: CreateTicketDto , userId:number): Promise<Ticket> {
+    const ticketNumber = generateRandomDigit(12)
+    const event = await this.eventsService.findOneById(createTicketDto.eventId)
+    const ticketSchema = {
+      userId,
+      eventId:event.id,
+      ticketNumber,
+      price : event.price
+    }
+    return await this.ticketRepository.save(ticketSchema);
   }
 
-  async findAll(): Promise<Ticket[]> {
-    return await this.ticketRepository.find({ relations: ['user', 'event'] });
+  async findTickets(userId?: number, eventId?: number): Promise<Ticket[]> {
+    const whereCondition: any = {};
+  
+    if (userId) {
+      whereCondition.user = { id: userId };
+    }
+    if (eventId) {
+      whereCondition.event = { id: eventId };
+    }
+  
+    return await this.ticketRepository.find({
+      where: whereCondition,
+      relations: ['user', 'event'],
+      order: { createdAt: 'DESC' }, // Sorting by createdAt in descending order
+    });
   }
 
   async findOne(id: number): Promise<Ticket> {
