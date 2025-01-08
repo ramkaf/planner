@@ -13,6 +13,7 @@ import { UserRole } from '../interfaces/user.interface';
 import { Event } from 'src/events/entities/event.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { Mailer } from 'src/mailer/entities/mailer.entity';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Entity()
 export class User {
@@ -79,5 +80,8 @@ export class User {
   reviews: Review[];
 
   @OneToMany(() => Mailer, (mailer) => mailer.user)
-  mailers: Mailer[]; // Defines the One-to-Many relationship with Mailer
+  mailers: Mailer[]; 
+
+  @OneToMany(() => Ticket, (ticket) => ticket.user)
+  tickets: Ticket[];
 }

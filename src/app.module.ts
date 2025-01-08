@@ -47,7 +47,7 @@ import { EmailVerification } from './users/entities/email-verification.entity';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer , PasswordReset , EmailVerification], // Define your entities here
+        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer , PasswordReset , EmailVerification , Ticket], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
@@ -62,6 +62,7 @@ import { EmailVerification } from './users/entities/email-verification.entity';
     ReviewModule,
     AddressModule,
     UploadModule,
+    TicketModule
   ],
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead

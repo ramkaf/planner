@@ -15,6 +15,7 @@ import { Author } from 'src/author/entities/author.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { Address } from 'src/address/entities/address.entity'; // Import Address entity
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Entity('event')
 export class Event {
@@ -93,4 +94,7 @@ export class Event {
   @ManyToOne(() => Address, (address) => address.events, { nullable: true })
   @JoinColumn({ name: 'address_id' })
   address: Address;
+
+  @OneToMany(() => Ticket, (ticket) => ticket.event)
+  tickets: Ticket[];
 }

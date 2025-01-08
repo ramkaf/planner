@@ -6,10 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { generateRandomSixDigit, generateSecureRandomToken } from 'src/common/utils/base.utils';
 import { EmailVerification } from '../entities/email-verification.entity';
 import { EmailService } from 'src/mailer/providers/mailer.service';
 import { UsersService } from './users.service';
+import { generateRandomDigit } from 'src/common/utils/base.utils';
 
 @Injectable()
 export class VerificationService {
@@ -19,7 +19,6 @@ export class VerificationService {
     private readonly mailerService:EmailService,
     @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
-    // private readonly userService:UsersService
   ) {}
 
   save(emailVerificationService: Partial<EmailVerification>): Promise<EmailVerification> {
@@ -27,7 +26,7 @@ export class VerificationService {
   }
 
   async prepareVerificationSchemaBeforeSending(userId:number) {
-    const code = generateRandomSixDigit();
+    const code = generateRandomDigit(6);
     const emailVerificationSchema = {
         userId,
         code,
