@@ -22,21 +22,18 @@ import { AddressModule } from './address/address.module';
 import { Address } from './address/entities/address.entity';
 import { UploadModule } from './upload/upload.module';
 import { MailerModule } from './mailer/mailer.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Mailer } from './mailer/entities/mailer.entity';
 import { PasswordReset } from './users/entities/password-reset.entity';
 import { EmailVerification } from './users/entities/email-verification.entity';
-
+import { NestFactory } from '@nestjs/core';
+import * as express from 'express'
+import { NestExpressApplication } from '@nestjs/platform-express';
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [databaseConfig], // Load the configuration from the database.config.ts
       isGlobal: true, // Make the configuration accessible globally
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '/static', // The base URL from which static files are served
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule], // Import ConfigModule so ConfigService is available
@@ -68,4 +65,15 @@ import { EmailVerification } from './users/entities/email-verification.entity';
 })
 
 
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  async onModuleInit() {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    
+    // Serve static files from the 'public' directory
+    app.use('/static', express.static(join(__dirname, '..', 'public')));
+    
+    // Or you can serve multiple directories
+    app.use('/assets', express.static(join(__dirname, '..', 'assets')));
+    app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  }
+}
