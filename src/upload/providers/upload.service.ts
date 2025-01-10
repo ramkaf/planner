@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { join } from 'path';
-import { UploadOptions } from './config/upload.config';
 import * as fs from 'fs';
+import { UploadOptions } from '../config/upload.config';
 
 @Injectable()
 export class UploadService {
