@@ -65,15 +65,4 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 })
 
 
-export class AppModule implements OnModuleInit {
-  async onModuleInit() {
-    const app = await NestFactory.create<NestExpressApplication>(AppModule);
-    
-    // Serve static files from the 'public' directory
-    app.use('/static', express.static(join(__dirname, '..', 'public')));
-    
-    // Or you can serve multiple directories
-    app.use('/assets', express.static(join(__dirname, '..', 'assets')));
-    app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-  }
-}
+export class AppModule {}

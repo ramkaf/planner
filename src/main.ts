@@ -8,6 +8,8 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use('/static', express.static(join(__dirname, '..', 'public')));
+  app.use('/assets', express.static(join(__dirname, '..', 'assets')));
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalPipes(
     new ValidationPipe({
