@@ -29,6 +29,7 @@ import { EmailVerification } from './users/entities/email-verification.entity';
 import { Role } from './rbac/entities/role.entity';
 import { Permission } from './rbac/entities/permission.entity';
 import { RbacModule } from './rbac/rbac.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { RbacModule } from './rbac/rbac.module';
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
     }),
+    RedisModule,
     RbacModule,
     AuthModule,
     MailerModule,
@@ -61,6 +63,7 @@ import { RbacModule } from './rbac/rbac.module';
     ReviewModule,
     AddressModule,
     UploadModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
