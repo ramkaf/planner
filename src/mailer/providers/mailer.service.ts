@@ -10,6 +10,7 @@ import { ISendMailOptions, ITemplateEmailConfigVariables } from '../interfaces/m
 import * as handlebars from 'handlebars';
 import { EmailStatus, EmailType } from '../interfaces/mailer.enum';
 import { User } from 'src/users/entities/user.entity';
+import { IUser } from 'src/users/interfaces/user.interface';
 
 
 
@@ -139,7 +140,7 @@ export class EmailService {
       await this.logEmails(to ,EmailType.Purchase , EmailStatus.error , error.message)
     }
   }
-  async sendPasswordReset(user:User , resetToken:string) {
+  async sendPasswordReset(user:IUser , resetToken:string) {
     const {email:to} = user
     try {
       const variables :ITemplateEmailConfigVariables['reset-password'] = {

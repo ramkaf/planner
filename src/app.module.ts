@@ -26,9 +26,11 @@ import { join } from 'path';
 import { Mailer } from './mailer/entities/mailer.entity';
 import { PasswordReset } from './users/entities/password-reset.entity';
 import { EmailVerification } from './users/entities/email-verification.entity';
-import { NestFactory } from '@nestjs/core';
-import * as express from 'express'
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { Role } from './rbac/entities/role.entity';
+import { Permission } from './rbac/entities/permission.entity';
+import { RbacModule } from './rbac/rbac.module';
+import { RedisModule } from './redis/redis.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,11 +46,13 @@ import { NestExpressApplication } from '@nestjs/platform-express';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer , PasswordReset , EmailVerification], // Define your entities here
+        entities: [ Role , Permission , User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer , PasswordReset , EmailVerification], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
     }),
+    RedisModule,
+    RbacModule,
     AuthModule,
     MailerModule,
     EventsModule,
@@ -59,6 +63,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
     ReviewModule,
     AddressModule,
     UploadModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead

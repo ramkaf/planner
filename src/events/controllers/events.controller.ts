@@ -9,6 +9,7 @@ import {
   Request,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { EventsService } from './../providers/events.service';
 import { CreateEventDto } from './../dto/create-event.dto';
@@ -24,8 +25,13 @@ import { EventStatus } from './../interfaces/event.interface';
 import { ICreateEvent } from './../interfaces/create.event.inerface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/upload/providers/upload.service';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { PermissionGuard } from '../../rbac/guards/permission.guard';
+import { RequiresPermission, ControllerPermission } from '../../rbac/decorators/requires-permission.decorator';
 
 @Controller('events')
+@UseGuards(JwtAuthGuard, PermissionGuard)  // Apply global guards here
+@ControllerPermission('events')  // Controller-level permission
 export class EventsController {
   constructor(
     private readonly eventsService: EventsService,
@@ -33,6 +39,7 @@ export class EventsController {
   ) {}
 
   @Post()
+  @RequiresPermission('events:create')  // Permission required for this route
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @UploadedFile() image: Express.Multer.File,
@@ -59,6 +66,7 @@ export class EventsController {
   }
 
   @Get()
+  @RequiresPermission('events:read')  // Permission required for this route
   async findAll(
     @PaginationParams() pagination: Pagination,
   ): Promise<PaginationResponse<Event>> {
@@ -66,16 +74,19 @@ export class EventsController {
   }
 
   @Get(':id')
+  @RequiresPermission('events:read')  // Permission required for this route
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(+id);
   }
 
   @Patch(':id')
+  @RequiresPermission('events:update')  // Permission required for this route
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     return this.eventsService.update(+id, updateEventDto);
   }
 
   @Delete(':id')
+  @RequiresPermission('events:delete')  // Permission required for this route
   remove(@Param('id') id: string) {
     return this.eventsService.remove(+id);
   }

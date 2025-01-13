@@ -6,6 +6,7 @@ import {
   Req,
   Request,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './../providers/users.service';
@@ -14,8 +15,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Request as ExpressRequest } from 'express';
 import { ICompleteUserInformation } from './../interfaces/user.information.interface';
 import { UploadService } from 'src/upload/providers/upload.service';
+import { ControllerPermission, RequiresPermission } from 'src/rbac/decorators/requires-permission.decorator';
+import { PermissionGuard } from 'src/rbac/guards/permission.guard';
 
 @Controller('users')
+@UseGuards(PermissionGuard)  // Apply global permission guard
+@ControllerPermission('users')  // Controller-level permission for all routes in this controller
 export class UsersController {
   constructor(
     private readonly userService: UsersService,
@@ -23,6 +28,7 @@ export class UsersController {
   ) {}
 
   @Patch('toggle-favorite/:eventId')
+  @RequiresPermission('users:favorite')  // Permission required for toggling favorites
   async toggleFavorite(
     @Req() req,
     @Param('eventId') eventId: number,
@@ -32,7 +38,8 @@ export class UsersController {
   }
 
   @Patch('/complete-information')
-  @UseInterceptors(FileInterceptor('image'))
+  @RequiresPermission('users:complete-information')  // Permission required for completing user information
+  @UseInterceptors(FileInterceptor('image'))  // File upload interceptor for profile image
   async create(
     @UploadedFile() image: Express.Multer.File,
     @Body() completeUserInformationDto: CompleteUserInformationDto,
