@@ -8,11 +8,13 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { UserRole } from '../interfaces/user.interface';
 import { Event } from 'src/events/entities/event.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { Mailer } from 'src/mailer/entities/mailer.entity';
+import { Role } from 'src/rbac/entities/role.entity';
 
 @Entity()
 export class User {
@@ -57,13 +59,14 @@ export class User {
 
   @Column({default : false , type: 'boolean'})
   isEmailVerified : Boolean
+
+  @Column({default : 1})
+  roleId: number;
+
+  @ManyToOne(() => Role, { eager: true })
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
   
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER,
-  })
-  role: UserRole;
 
   @Column({type : 'varchar' , default : null})
   referrer :  string

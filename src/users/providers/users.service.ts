@@ -14,6 +14,7 @@ import { EventsService } from 'src/events/providers/events.service';
 import { ICompleteUserInformation } from '../interfaces/user.information.interface';
 import { VerificationService } from './verification.service';
 import { VerifyEmailDto } from '../dtos/verify-email.dto';
+import { IUser } from '../interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -29,19 +30,26 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async findByCredentials(identifier: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({
-      where: [
-        // { id: parseInt(identifier) },
-        { email: identifier },
-        { phone: identifier },
-        { username: identifier },
-      ],
-    });
-    if (!user) {
-      throw new NotFoundException(`User not found.`);
-    }
-    return user;
+  async findByCredentials(identifier: string): Promise<IUser | null> {
+    const user = await this.userRepository
+  .createQueryBuilder('user')
+  .leftJoinAndSelect('user.role', 'role')
+  .leftJoinAndSelect('role.permissions', 'permission')
+  .where('user.email = :identifier OR user.phone = :identifier OR user.username = :identifier', {
+    identifier,
+  })
+  .select([
+    'user', // Select the whole user object
+    'role.id', // Select only the `id` field from the role
+    'permission.id', // Select only the `id` field from permissions
+  ])
+  .getOne();
+
+if (!user) {
+  throw new NotFoundException(`User not found.`);
+}
+
+return user;
   }
 
   async userNameIsAvailable(username: string): Promise<Boolean | null> {
