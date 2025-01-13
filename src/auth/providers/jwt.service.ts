@@ -9,13 +9,12 @@ export class JwtToolService {
   constructor(private readonly jwtService: JwtService) {}
 
   public getJwtToken(user: IUser): string {
-
     const payload: Payload = {
       id: user.id,
       email: user.email,
       username: user.username,
       role:user.role,
-      permissions : user.role.permissions
+      permissions : user.role.permissions? user.role.permissions : []
     };
     return this.jwtService.sign(payload);
   }

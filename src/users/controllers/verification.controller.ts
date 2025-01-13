@@ -13,24 +13,24 @@ import { ControllerPermission, RequiresPermission } from 'src/rbac/decorators/re
 import { PermissionGuard } from 'src/rbac/guards/permission.guard';
 
 @Controller('users/verification')
-@UseGuards(PermissionGuard)
-@ControllerPermission('users')
+@UseGuards(PermissionGuard)  // Apply global permission guard to ensure the user has the necessary permissions
+@ControllerPermission('verification')  // Controller-level permission for all routes in this controller
 export class VerificationController {
   constructor(
     private readonly userService: UsersService
   ) {}
 
-  @RequiresPermission('users:create')
+  @RequiresPermission('verification:send-email-verification')  // Permission required for email verification completion
   @Get('email-verification')
-  async ComplateSignUp(@Req() req:ExpressRequest) {
-    const {id} = req.user
-    return await this.userService.emailVerification(id)
+  async completeSignUp(@Req() req: ExpressRequest) {
+    const { id } = req.user;
+    return await this.userService.emailVerification(id);
   }
 
   @Post('email-verification')
-  async VerifyEmail(@Body() verifyEmailDto:VerifyEmailDto ,  @Req() req:ExpressRequest) {
-    const {id} = req.user
-    return await this.userService.verifyEmail(id , verifyEmailDto)
+  @RequiresPermission('verification:verify-email')  // Permission required for email verification
+  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto, @Req() req: ExpressRequest) {
+    const { id } = req.user;
+    return await this.userService.verifyEmail(id, verifyEmailDto);
   }
-
 }

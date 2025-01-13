@@ -15,6 +15,7 @@ import { ICompleteUserInformation } from '../interfaces/user.information.interfa
 import { VerificationService } from './verification.service';
 import { VerifyEmailDto } from '../dtos/verify-email.dto';
 import { IUser } from '../interfaces/user.interface';
+import { SignUpDto } from 'src/auth/dto/signup.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,20 @@ export class UsersService {
 
   save(user: Partial<User>): Promise<User> {
     return this.userRepository.save(user);
+  }
+
+  async create (signUpDto:SignUpDto , password:string){
+    const userSchema = this.userRepository.create({
+      ...signUpDto,
+      password
+    });
+    try {
+      const user = await this.userRepository.save(userSchema);
+      return await this.findByCredentials(user.email)
+    }
+    catch {
+
+    }
   }
 
   async findByCredentials(identifier: string): Promise<IUser | null> {

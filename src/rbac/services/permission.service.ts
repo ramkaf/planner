@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Permission } from '../entities/permission.entity';
-import { CreateControllerPermissionDto, CreateActionPermissionDto } from '../dto/create-permission.dto';
+import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { RedisService } from 'src/redis/providers/redis.service';
 
 @Injectable()
@@ -13,27 +13,30 @@ export class PermissionService {
     private readonly redisService:RedisService
   ) {}
   
-  async createControllerPermission(dto: CreateControllerPermissionDto): Promise<Permission> {
-    const permission = await this.permissionRepository.save({
-      name: `${dto.resource}:*`,
-      description: dto.description || `Full access to ${dto.resource}`,
-      resource: dto.resource,
-      action : '*',
-      isControllerPermission: true,
-    });
-    this.reInsertPermissionsIntoRedis()
-    return permission
-  }
-  async createActionPermission(dto: CreateActionPermissionDto): Promise<Permission> {
-    const permission = await this.permissionRepository.save({
-      name: `${dto.resource}:${dto.action}`,
-      description: dto.description,
-      resource: dto.resource,
-      action: dto.action,
-      isControllerPermission: false,
-    });
-    this.reInsertPermissionsIntoRedis()
-    return permission
+  async createPermission(dto: CreatePermissionDto): Promise<Permission> {
+    try {
+      // Modify the name if it's a controller permission (if needed)
+      let {name , description , isControllerPermission} = dto
+
+      if (!description && isControllerPermission === true)
+        description = `the controller permission => ${dto.name}`
+         if (!description && isControllerPermission === false)
+
+        description = `the endpoint permission => ${name}`
+      if (dto.isControllerPermission) {
+        name = `${dto.name}:*`;
+      }
+
+      const permission = await this.permissionRepository.save({
+        name,
+        description: dto.description || `The controller permission ===> ${name} .`,
+      });
+
+      this.reInsertPermissionsIntoRedis();
+      return permission;
+    } catch (error) {
+      throw new Error(`Failed to create permission: ${error.message}`);
+    }
   }
   async reInsertPermissionsIntoRedis (){
     const permissions = await this.findAll();

@@ -12,17 +12,8 @@ export class Permission {
   name: string;
 
   @Column()
-  description: string;
-
-  @Column()
-  resource: string;
-
-  @Column({ nullable: true })
-  action: string;
-
-  @Column({ default: false })
-  isControllerPermission: boolean;
-
+  description: string
+  
     @ManyToMany(() => Role, (role) => role.permissions)
     roles: Role[];
 }

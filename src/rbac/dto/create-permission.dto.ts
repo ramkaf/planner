@@ -1,10 +1,15 @@
-export class CreateControllerPermissionDto {
-    resource: string;
-    description?: string;
-  }
+import { IsBoolean, IsOptional, IsString } from "class-validator";
   
-  export class CreateActionPermissionDto {
-    resource: string;
-    action: string;
+  export class CreatePermissionDto {
+
+    @IsString()
+    name: string;
+
+
+    @IsString()
+    @IsOptional()
     description: string;
+
+    @IsBoolean()
+    isControllerPermission:boolean
   }

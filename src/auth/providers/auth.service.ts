@@ -15,7 +15,7 @@ import { JwtToolService } from './jwt.service';
 import { ILogin } from '../interfaces/login.interface';
 import { EmailService } from 'src/mailer/providers/mailer.service';
 import { CompleteSignupDto } from '../dto/complete-signup.dto';
-import { VerificationService } from 'src/users/providers/verification.service';
+import { IUser } from 'src/users/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -25,20 +25,15 @@ export class AuthService {
     private readonly jwtToolService: JwtToolService,
     private readonly passwordService: PasswordService,
     private readonly usersService: UsersService,
-    private readonly verficationService: VerificationService,
     private readonly mailerService:EmailService
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
-    const { password } = signUpDto;
-    const hashedPassword = await this.passwordService.hashPassword(password);
-    const user = this.userRepository.create({
-      ...signUpDto,
-      password: hashedPassword,
-    });
+  async signUp(signUpDto: SignUpDto): Promise<{ user: IUser; token: string }> {
     try {
-      await this.userRepository.save(user);
-      const token = this.jwtToolService.getJwtToken(user);
+      const { password } = signUpDto;
+      const hashedPassword = await this.passwordService.hashPassword(password);
+      const user: IUser = await this.usersService.create(signUpDto, hashedPassword);
+      const token:string = this.jwtToolService.getJwtToken(user);
       delete user.password;
       return { user, token };
     } catch (error) {
