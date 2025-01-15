@@ -28,6 +28,7 @@ import { UploadService } from 'src/upload/providers/upload.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionGuard } from '../../rbac/guards/permission.guard';
 import { RequiresPermission, ControllerPermission } from '../../rbac/decorators/requires-permission.decorator';
+import { RequestWithUser } from 'src/users/interfaces/user.interface';
 
 @Controller('events')
 @UseGuards(JwtAuthGuard, PermissionGuard)  // Apply global guards here
@@ -44,7 +45,7 @@ export class EventsController {
   async create(
     @UploadedFile() image: Express.Multer.File,
     @Body() createEventDto: CreateEventDto,
-    @Request() req: ExpressRequest,
+    @Request() req: RequestWithUser,
   ) {
     const { id: user_id } = req.user;
     const status = createEventDto.status || EventStatus.Scheduled;

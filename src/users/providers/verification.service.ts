@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { generateRandomSixDigit, generateSecureRandomToken } from 'src/common/utils/base.utils';
+import { generateRandomSixDigit } from 'src/common/utils/base.utils';
 import { EmailVerification } from '../entities/email-verification.entity';
 import { EmailService } from 'src/mailer/providers/mailer.service';
 import { UsersService } from './users.service';

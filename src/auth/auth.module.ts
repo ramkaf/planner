@@ -1,4 +1,3 @@
-// src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -9,6 +8,7 @@ import { AuthService } from './providers/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from 'src/users/entities/user.entity';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { PasswordService } from './providers/password.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtToolService } from './providers/jwt.service';
@@ -20,7 +20,9 @@ import { PasswordController } from './controllers/password.controller';
   imports: [
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([PasswordReset]),
-    PassportModule,
+    PassportModule.register({
+      defaultStrategy: ['jwt', 'google'],
+    }),
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -34,14 +36,15 @@ import { PasswordController } from './controllers/password.controller';
     }),
     MailerModule
   ],
-  controllers: [AuthController , PasswordController],
+  controllers: [AuthController, PasswordController],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
+    GoogleStrategy,
     PasswordService,
     JwtToolService
-  ], 
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

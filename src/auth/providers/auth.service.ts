@@ -16,6 +16,7 @@ import { ILogin } from '../interfaces/login.interface';
 import { EmailService } from 'src/mailer/providers/mailer.service';
 import { CompleteSignupDto } from '../dto/complete-signup.dto';
 import { IUser } from 'src/users/interfaces/user.interface';
+import { IGoogleUser } from '../interfaces/google-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -28,14 +29,14 @@ export class AuthService {
     private readonly mailerService:EmailService
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ user: IUser; token: string }> {
+  async signUp(signUpDto: SignUpDto): Promise<{ user: IUser; accessToken: string }> {
     try {
       const { password } = signUpDto;
       const hashedPassword = await this.passwordService.hashPassword(password);
       const user: IUser = await this.usersService.create(signUpDto, hashedPassword);
-      const token:string = this.jwtToolService.getJwtToken(user);
+      const accessToken:string = this.jwtToolService.getJwtToken(user);
       delete user.password;
-      return { user, token };
+      return { user, accessToken };
     } catch (error) {
       if (error.code === '23505') {
         throw new UnauthorizedException(
@@ -72,7 +73,7 @@ export class AuthService {
     return null;
   }
 
-  async completeSignUp(id:number , completeSignupDto:CompleteSignupDto){
+  async completeSignUp(id:number , completeSignupDto:CompleteSignupDto):Promise<IUser>{
     const user = await this.usersService.findById(id)
     if (user){
       const updatedUserSchema = Object.assign(user , completeSignupDto)
@@ -80,6 +81,43 @@ export class AuthService {
       this.mailerService.sendWelcomeEmail(updatedUser)
       return user
     }
-    return new ForbiddenException ()
+    throw new ForbiddenException ()
+  }
+
+  async validateOrCreateGoogleUser(googleUser: IGoogleUser): Promise<string> {
+
+    try {
+      const existingUser = await this.userRepository.findOne({where : {email : googleUser.email}});
+      if (existingUser) {
+        existingUser.lastLogin = new Date();
+        existingUser.isEmailVerified = true;
+        await this.userRepository.save(existingUser);
+        const accessToken = this.jwtToolService.getJwtToken(existingUser)
+        return accessToken
+      }
+      // console.log(existingUser);
+      
+
+      const  res = await this.signUp({
+        email: googleUser.email,
+        password : '321165ram@A',
+        confirmPassword : "321165ram@A"
+      });
+      
+    } catch (error) {
+
+    }
+ 
+ 
+ 
+    
+    // console.log(res);
+    
+    // const {firstName , lastName} = googleUser
+    // newUser.firstName = firstName;
+    // newUser.lastName = lastName
+    // const user = await this.completeSignUp(newUser.id , {firstName , lastName})
+    // const token = this.jwtToolService.getJwtToken(user)
+    // return {user , token}
   }
 }

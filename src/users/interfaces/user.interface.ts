@@ -1,4 +1,5 @@
 import { IRole } from "src/rbac/interfaces/role.interface";
+import { User } from "../entities/user.entity";
 
 export interface IUser {
     id: number;
@@ -18,4 +19,8 @@ export interface IUser {
     referrer: string | null;
     role: IRole;
     password:string
+  }
+
+  export interface RequestWithUser extends Request {
+    user: User; // Mark as non-optional since these routes require authentication
   }

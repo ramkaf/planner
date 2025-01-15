@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0;">
+  <div style="max-width: 600px; margin: 50px auto; background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); overflow: hidden;">
+    <!-- Header -->
+    <div style="background-color: #4caf50; color: white; padding: 20px; text-align: center;">
+      <h1 style="margin: 0; font-size: 24px;">Verify Your Email Address</h1>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 20px; line-height: 1.6; text-align: center;">
+      <h1 style="color: #333; font-size: 20px; margin-top: 0;">Hi {{name}},</h1>
+      <p style="color: #555; font-size: 16px; margin: 10px 0;">
+        Thank you for signing up! Please use the 6-digit code below to verify your email address and activate your account:
+      </p>
+      <p style="font-size: 24px; color: #4caf50; font-weight: bold; margin: 20px 0;">
+        {{code}}
+      </p>
+      <p style="color: #555; font-size: 16px; margin: 20px 0;">
+        If you didn't request this, please ignore this email.
+      </p>
+      <p style="color: #555; font-size: 16px; margin: 10px 0;">
+        Thanks,<br>The Team
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f4f4f9; color: #888; padding: 10px 20px; text-align: center; font-size: 12px;">
+      <p style="margin: 5px 0;">
+        If you have any questions, feel free to <a href="mailto:support@example.com" style="color: #4caf50; text-decoration: none;">contact us</a>.
+      </p>
+      <p style="margin: 5px 0;">&copy; {{year}} All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

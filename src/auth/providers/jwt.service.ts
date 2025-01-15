@@ -12,9 +12,9 @@ export class JwtToolService {
     const payload: Payload = {
       id: user.id,
       email: user.email,
-      username: user.username,
+      username: user.username || null,
       role:user.role,
-      permissions : user.role.permissions? user.role.permissions : []
+      permissions :[]
     };
     return this.jwtService.sign(payload);
   }

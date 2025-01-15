@@ -17,6 +17,7 @@ import { ICompleteUserInformation } from './../interfaces/user.information.inter
 import { UploadService } from 'src/upload/providers/upload.service';
 import { ControllerPermission, RequiresPermission } from 'src/rbac/decorators/requires-permission.decorator';
 import { PermissionGuard } from 'src/rbac/guards/permission.guard';
+import { RequestWithUser } from '../interfaces/user.interface';
 
 @Controller('users')
 @UseGuards(PermissionGuard)  // Apply global permission guard
@@ -43,7 +44,7 @@ export class UsersController {
   async create(
     @UploadedFile() image: Express.Multer.File,
     @Body() completeUserInformationDto: CompleteUserInformationDto,
-    @Request() req: ExpressRequest,
+    @Request() req: RequestWithUser,
   ) {
     const { id: user_id } = req.user;
     let profilePictureUrl = null;
