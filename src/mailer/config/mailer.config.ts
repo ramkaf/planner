@@ -1,6 +1,5 @@
 export interface EmailConfig {
-    gmailUser: string;
-    gmailAppPassword: string;
-    defaultFromEmail?: string;
-  }
-  
+  gmailUser: string;
+  gmailAppPassword: string;
+  defaultFromEmail?: string;
+}

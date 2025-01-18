@@ -2,7 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import * as express from 'express'
+import * as express from 'express';
 import { join } from 'path';
 
 async function bootstrap() {

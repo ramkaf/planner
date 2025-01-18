@@ -5,5 +5,5 @@ export function generateSecureRandomToken(): string {
 }
 
 export function generateRandomSixDigit(): string {
-    return randomInt(100000, 1000000).toString(); // Generates a number between 100000 and 999999
-  }
+  return randomInt(100000, 1000000).toString(); // Generates a number between 100000 and 999999
+}

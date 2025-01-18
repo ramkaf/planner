@@ -1,7 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, AfterInsert } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  AfterInsert,
+} from 'typeorm';
 import { Role } from './role.entity';
 import { PermissionService } from '../services/permission.service';
-import { RedisService } from 'src/redis/providers/redis.service';
+import { RedisService } from '../../redis/providers/redis.service';
 
 @Entity()
 export class Permission {
@@ -12,8 +18,8 @@ export class Permission {
   name: string;
 
   @Column()
-  description: string
-  
-    @ManyToMany(() => Role, (role) => role.permissions)
-    roles: Role[];
+  description: string;
+
+  @ManyToMany(() => Role, (role) => role.permissions)
+  roles: Role[];
 }

@@ -6,9 +6,9 @@ export default () => ({
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'planner',
   },
-  email :{
-    gmailUser : process.env.GMAIL_USER,
-    gmailAppPassword : process.env.GMAIL_APP_PASSWORD,
-    defaultFromEmail : process.env.DEFAULT_FROM_EMAIL,
-  }
+  email: {
+    gmailUser: process.env.GMAIL_USER,
+    gmailAppPassword: process.env.GMAIL_APP_PASSWORD,
+    defaultFromEmail: process.env.DEFAULT_FROM_EMAIL,
+  },
 });

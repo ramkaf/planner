@@ -7,14 +7,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './providers/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PasswordService } from './providers/password.service';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { JwtToolService } from './providers/jwt.service';
-import { MailerModule } from 'src/mailer/mailer.module';
-import { PasswordReset } from 'src/users/entities/password-reset.entity';
+import { MailerModule } from '../mailer/mailer.module';
 import { PasswordController } from './controllers/password.controller';
+import { PasswordReset } from './entities/password-reset.entity';
 
 @Module({
   imports: [
@@ -32,16 +32,16 @@ import { PasswordController } from './controllers/password.controller';
       }),
       inject: [ConfigService],
     }),
-    MailerModule
+    MailerModule,
   ],
-  controllers: [AuthController , PasswordController],
+  controllers: [AuthController, PasswordController],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
     PasswordService,
-    JwtToolService
-  ], 
+    JwtToolService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

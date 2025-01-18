@@ -11,10 +11,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Event } from 'src/events/entities/event.entity';
-import { Review } from 'src/review/entities/review.entity';
-import { Mailer } from 'src/mailer/entities/mailer.entity';
-import { Role } from 'src/rbac/entities/role.entity';
+import { Event } from '../../events/entities/event.entity';
+import { Review } from '../../review/entities/review.entity';
+import { Mailer } from '../../mailer/entities/mailer.entity';
+import { Role } from '../../rbac/entities/role.entity';
 
 @Entity()
 export class User {
@@ -24,19 +24,19 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true , nullable : true })
+  @Column({ unique: true, nullable: true })
   username: string;
 
-  @Column({ unique: true  , nullable:true})
+  @Column({ unique: true, nullable: true })
   phone: string;
 
   @Column()
   password: string;
 
-  @Column({nullable : true})
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column({nullable : true})
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({ nullable: true })
@@ -57,20 +57,19 @@ export class User {
   @Column({ nullable: true })
   lastLogin?: Date;
 
-  @Column({default : false , type: 'boolean'})
-  isEmailVerified : Boolean
+  @Column({ default: false, type: 'boolean' })
+  isEmailVerified: Boolean;
 
-  @Column({default : 1})
+  @Column({ default: 1 })
   roleId: number;
 
   @ManyToOne(() => Role, { eager: true })
   @JoinColumn({ name: 'roleId' })
   role: Role;
-  
 
-  @Column({type : 'varchar' , default : null})
-  referrer :  string
-  
+  @Column({ type: 'varchar', default: null })
+  referrer: string;
+
   @OneToMany(() => Event, (event) => event.user_id) // Matches the 'user' field in the Event entity
   events: Event[];
 

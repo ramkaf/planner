@@ -1,14 +1,18 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/providers/users.service';
-import { EmailService } from 'src/mailer/providers/mailer.service';
-import { PasswordReset } from 'src/users/entities/password-reset.entity';
+import { UsersService } from '../../users/providers/users.service';
+import { EmailService } from '../../mailer/providers/mailer.service';
+import { PasswordReset } from '../../auth/entities/password-reset.entity';
 import { ResetPassowrdDto } from '../dto/reset-password.dto';
-import { generateSecureRandomToken } from 'src/common/utils/base.utils';
-
+import { generateSecureRandomToken } from '../../common/utils/base.utils';
 
 @Injectable()
 export class PasswordService {
@@ -17,14 +21,15 @@ export class PasswordService {
   constructor(
     private readonly userService: UsersService,
     private readonly mailerService: EmailService,
-    private readonly configService: ConfigService,
     @InjectRepository(PasswordReset)
     private readonly passwordResetRepository: Repository<PasswordReset>,
   ) {
-    this.saltRounds = this.configService.get<number>('PASSWORD_SALT_ROUNDS', 10);
+    this.saltRounds = 10;
   }
 
-  private async findPasswordResetByToken(token: string): Promise<PasswordReset> {
+  private async findPasswordResetByToken(
+    token: string,
+  ): Promise<PasswordReset> {
     return await this.passwordResetRepository.findOne({
       where: {
         token,
@@ -70,12 +75,14 @@ export class PasswordService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new InternalServerErrorException('Error sending reset password email');
+      throw new InternalServerErrorException(
+        'Error sending reset password email',
+      );
     }
   }
   public async resetPasswordPage(token: string): Promise<PasswordReset> {
     const passwordReset = await this.findPasswordResetByToken(token);
-    
+
     if (!passwordReset) {
       throw new NotFoundException('Password reset token not found');
     }
@@ -102,17 +109,19 @@ export class PasswordService {
       user.password = hashedPassword;
 
       await this.userService.save(user);
-      
+
       passwordReset.isUsed = true;
       await this.passwordResetRepository.save(passwordReset);
 
       return true;
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException('Error resetting password');
     }
   }
-  
 }

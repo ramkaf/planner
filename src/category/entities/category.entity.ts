@@ -1,4 +1,4 @@
-import { Event } from 'src/events/entities/event.entity';
+import { Event } from '../../events/entities/event.entity';
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity('category')
@@ -6,7 +6,7 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 100, unique: true })
   name: string;
 
   @Column('text', { nullable: true })

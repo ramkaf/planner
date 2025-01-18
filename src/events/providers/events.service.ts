@@ -1,23 +1,19 @@
 import { BadRequestException, Injectable, Request } from '@nestjs/common';
 import { UpdateEventDto } from './../dto/update-event.dto';
-import {
-  DeepPartial,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import { Event } from './../entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Pagination,
   PaginationResponse,
-} from 'src/common/types/pagination.interface';
+} from '../../common/types/pagination.interface';
 import { ICreateEvent } from './../interfaces/create.event.inerface';
-import { User } from 'src/users/entities/user.entity';
-import { Category } from 'src/category/entities/category.entity';
-import { Author } from 'src/author/entities/author.entity';
-import { Tag } from 'src/tag/entities/tag.entity';
+import { User } from '../../users/entities/user.entity';
+import { Category } from '../../category/entities/category.entity';
+import { Author } from '../../author/entities/author.entity';
+import { Tag } from '../../tag/entities/tag.entity';
 import { EVENT_FILTER_CONFIG } from './../constants/filter-config';
-import { Address } from 'src/address/entities/address.entity';
+import { Address } from '../../address/entities/address.entity';
 
 @Injectable()
 export class EventsService {

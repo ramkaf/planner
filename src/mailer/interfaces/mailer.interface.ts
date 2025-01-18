@@ -29,22 +29,22 @@ export interface ITemplateEmailConfigVariables {
 }
 
 export interface IPurchaseEmailVariables {
-  name: string;      // Required for greeting
-  product: string;   // Required for product details
-  cart: string;      // Required for cart link URL
+  name: string; // Required for greeting
+  product: string; // Required for product details
+  cart: string; // Required for cart link URL
 }
 export interface IPasswordResetVariables {
-  name: string;      // Required for greeting
-  resetUrl: string;  // Required for password reset link
-  year: number;      // Required for copyright
+  name: string; // Required for greeting
+  resetUrl: string; // Required for password reset link
+  year: number; // Required for copyright
 }
 export interface IVerificationVariables {
-  name: string;    
-  code: string;      
-  year: number;      
+  name: string;
+  code: string;
+  year: number;
 }
 export interface IWelcomeVariables {
-  title: string;     
-  name: string;      
-  year: number;    
+  title: string;
+  name: string;
+  year: number;
 }

@@ -32,9 +32,7 @@ class AtLeastOneFieldConstraint implements ValidatorConstraintInterface {
   }
 }
 
-
 export class ResetPassowrdDto {
-
   @IsString()
   @MinLength(6)
   @Matches(
@@ -69,5 +67,5 @@ export class ResetPasswordCredentialDto {
   atLeastOneField!: boolean; // This property exists solely for validation.
 }
 export class ResetPasswordUrl {
-    token : string
+  token: string;
 }

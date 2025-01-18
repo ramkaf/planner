@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { CreateCategoryDto } from './../dto/create-category.dto';
@@ -13,8 +17,12 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const category = this.categoryRepository.create(createCategoryDto);
-    return this.categoryRepository.save(category);
+    try {
+      const category = this.categoryRepository.create(createCategoryDto);
+      return this.categoryRepository.save(category);
+    } catch (error) {
+      throw new BadRequestException('name is not unique');
+    }
   }
 
   async findAll(): Promise<Category[]> {
@@ -48,18 +56,5 @@ export class CategoryService {
     const category = await this.findOne(id); // Check if category exists
     category.deletedAt = new Date(); // Soft delete
     await this.categoryRepository.save(category);
-  }
-
-  async restore(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      where: { id, deletedAt: Not(null) },
-    });
-    if (!category) {
-      throw new NotFoundException(
-        `Category with ID ${id} not found for restoration`,
-      );
-    }
-    category.deletedAt = null;
-    return this.categoryRepository.save(category);
   }
 }

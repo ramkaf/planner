@@ -1,15 +1,13 @@
-import { IsBoolean, IsOptional, IsString } from "class-validator";
-  
-  export class CreatePermissionDto {
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
-    @IsString()
-    name: string;
+export class CreatePermissionDto {
+  @IsString()
+  name: string;
 
+  @IsString()
+  @IsOptional()
+  description: string;
 
-    @IsString()
-    @IsOptional()
-    description: string;
-
-    @IsBoolean()
-    isControllerPermission:boolean
-  }
+  @IsBoolean()
+  isControllerPermission: boolean;
+}

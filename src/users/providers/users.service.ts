@@ -10,12 +10,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { EventsService } from 'src/events/providers/events.service';
+import { EventsService } from '../../events/providers/events.service';
 import { ICompleteUserInformation } from '../interfaces/user.information.interface';
 import { VerificationService } from './verification.service';
 import { VerifyEmailDto } from '../dtos/verify-email.dto';
 import { IUser } from '../interfaces/user.interface';
-import { SignUpDto } from 'src/auth/dto/signup.dto';
+import { SignUpDto } from '../../auth/dto/signup.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,55 +24,50 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private readonly eventService: EventsService,
     @Inject(forwardRef(() => VerificationService))
-    private readonly verficationService:VerificationService,
+    private readonly verficationService: VerificationService,
   ) {}
 
-  save(user: Partial<User>): Promise<User> {
+  save(user: IUser): Promise<User> {
     return this.userRepository.save(user);
   }
 
-  async create (signUpDto:SignUpDto , password:string){
+  async create(signUpDto: SignUpDto, password: string) {
     const userSchema = this.userRepository.create({
       ...signUpDto,
-      password
+      password,
     });
     try {
       const user = await this.userRepository.save(userSchema);
-      return await this.findByCredentials(user.email)
-    }
-    catch {
-
-    }
+      return await this.findByCredentials(user.email);
+    } catch {}
   }
 
   async findByCredentials(identifier: string): Promise<IUser | null> {
     const user = await this.userRepository
-  .createQueryBuilder('user')
-  .leftJoinAndSelect('user.role', 'role')
-  .leftJoinAndSelect('role.permissions', 'permission')
-  .where('user.email = :identifier OR user.phone = :identifier OR user.username = :identifier', {
-    identifier,
-  })
-  .select([
-    'user', // Select the whole user object
-    'role.id', // Select only the `id` field from the role
-    'permission.id', // Select only the `id` field from permissions
-  ])
-  .getOne();
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('role.permissions', 'permission')
+      .where(
+        'user.email = :identifier OR user.phone = :identifier OR user.username = :identifier',
+        {
+          identifier,
+        },
+      )
+      .select([
+        'user', // Select the whole user object
+        'role.id', // Select only the `id` field from the role
+        'permission.id', // Select only the `id` field from permissions
+      ])
+      .getOne();
 
-if (!user) {
-  throw new NotFoundException(`User not found.`);
-}
-
-return user;
+    return user;
   }
 
   async userNameIsAvailable(username: string): Promise<Boolean | null> {
     const user = await this.userRepository.findOne({
-      where: 
-        { username },
+      where: { username },
     });
-    if (user) 
+    if (user)
       throw new HttpException(
         {
           statusCode: HttpStatus.CONFLICT,
@@ -135,21 +130,35 @@ return user;
     }
   }
 
-  async emailVerification(id:number){
-    const user = await this.findById(id)
-    await this.verficationService.deletePendingVerificationEmails(id)
-    const emailverfication = await  this.verficationService.prepareVerificationSchemaBeforeSending(id)
-    this.verficationService.sendVerificationEmail(user , emailverfication)
-    return true
+  async emailVerification(id: number) {
+    const user = await this.findById(id);
+    await this.verficationService.deletePendingVerificationEmails(id);
+    const emailverfication =
+      await this.verficationService.prepareVerificationSchemaBeforeSending(id);
+    this.verficationService.sendVerificationEmail(user, emailverfication);
+    return true;
   }
 
-  async verifyEmail(userId: number, verifyEmailDto: VerifyEmailDto): Promise<Boolean> {
-    const {code} = verifyEmailDto
-    const emailverification = await this.verficationService.findVerification(userId, code)
+  async verifyEmail(
+    userId: number,
+    verifyEmailDto: VerifyEmailDto,
+  ): Promise<Boolean> {
+    const { code } = verifyEmailDto;
+    const emailverification = await this.verficationService.findVerification(
+      userId,
+      code,
+    );
 
-    if (!emailverification || (emailverification && emailverification.expiresAt < new Date ()))
-      throw new BadRequestException('The verification link has expired or is invalid');
-      
-    return await this.verficationService.saveEmailVerificationResult(emailverification);
+    if (
+      !emailverification ||
+      (emailverification && emailverification.expiresAt < new Date())
+    )
+      throw new BadRequestException(
+        'The verification link has expired or is invalid',
+      );
+
+    return await this.verficationService.saveEmailVerificationResult(
+      emailverification,
+    );
   }
 }

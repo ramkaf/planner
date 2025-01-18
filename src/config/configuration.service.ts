@@ -19,8 +19,12 @@ export class ConfigurationService {
   get emailConfig(): EmailConfig {
     return {
       gmailUser: this.configService.get<string>('email.gmailUser'),
-      gmailAppPassword: this.configService.get<string>('email.gmailAppPassword'),
-      defaultFromEmail: this.configService.get<string>('email.defaultFromEmail'),
+      gmailAppPassword: this.configService.get<string>(
+        'email.gmailAppPassword',
+      ),
+      defaultFromEmail: this.configService.get<string>(
+        'email.defaultFromEmail',
+      ),
     };
   }
 }

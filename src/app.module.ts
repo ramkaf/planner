@@ -24,7 +24,7 @@ import { UploadModule } from './upload/upload.module';
 import { MailerModule } from './mailer/mailer.module';
 import { join } from 'path';
 import { Mailer } from './mailer/entities/mailer.entity';
-import { PasswordReset } from './users/entities/password-reset.entity';
+import { PasswordReset } from './auth/entities/password-reset.entity';
 import { EmailVerification } from './users/entities/email-verification.entity';
 import { Role } from './rbac/entities/role.entity';
 import { Permission } from './rbac/entities/permission.entity';
@@ -46,7 +46,21 @@ import { RedisModule } from './redis/redis.module';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [ Role , Permission , User, Tag, Category, Author, Event, Review, Ticket, Address , Mailer , PasswordReset , EmailVerification], // Define your entities here
+        entities: [
+          Role,
+          Permission,
+          User,
+          Tag,
+          Category,
+          Author,
+          Event,
+          Review,
+          Ticket,
+          Address,
+          Mailer,
+          PasswordReset,
+          EmailVerification,
+        ], // Define your entities here
         synchronize: true, // Don't use this in production, use migrations instead
       }),
       inject: [ConfigService], // Inject ConfigService to access the environment variables
@@ -68,6 +82,4 @@ import { RedisModule } from './redis/redis.module';
   controllers: [AppController],
   providers: [CustomLoggerService], // Register the CustomLoggerService instead
 })
-
-
 export class AppModule {}

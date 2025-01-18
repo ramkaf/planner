@@ -3,12 +3,14 @@ import { PermissionService } from '../services/permission.service';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionGuard } from '../guards/permission.guard';
-import { ControllerPermission, RequiresPermission } from '../decorators/requires-permission.decorator';
+import {
+  ControllerPermission,
+  RequiresPermission,
+} from '../decorators/requires-permission.decorator';
 
 @Controller('permissions')
 @UseGuards(PermissionGuard)
 // @ControllerPermission('permission')
-
 export class PermissionController {
   constructor(private permissionService: PermissionService) {}
 

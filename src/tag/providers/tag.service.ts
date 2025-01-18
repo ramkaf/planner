@@ -4,14 +4,14 @@ import { Repository } from 'typeorm';
 import { Tag } from './../entities/tag.entity';
 import { CreateTagDto } from './../dto/create-tag.dto';
 import { UpdateTagDto } from './../dto/update-tag.dto';
-import { RedisService } from 'src/redis/providers/redis.service';
+import { RedisService } from '../../redis/providers/redis.service';
 
 @Injectable()
 export class TagService {
   constructor(
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
-    private readonly redisService:RedisService
+    private readonly redisService: RedisService,
   ) {}
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {

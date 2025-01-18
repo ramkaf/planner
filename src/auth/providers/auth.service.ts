@@ -6,43 +6,44 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { SignUpDto } from '../dto/signup.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { PasswordService } from './password.service';
-import { UsersService } from 'src/users/providers/users.service';
+import { UsersService } from '../../users/providers/users.service';
 import { JwtToolService } from './jwt.service';
 import { ILogin } from '../interfaces/login.interface';
-import { EmailService } from 'src/mailer/providers/mailer.service';
+import { EmailService } from '../../mailer/providers/mailer.service';
 import { CompleteSignupDto } from '../dto/complete-signup.dto';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { IUser } from '../../users/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     private readonly jwtToolService: JwtToolService,
     private readonly passwordService: PasswordService,
     private readonly usersService: UsersService,
-    private readonly mailerService:EmailService
+    private readonly mailerService: EmailService,
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ user: IUser; token: string }> {
     try {
-      const { password } = signUpDto;
-      const hashedPassword = await this.passwordService.hashPassword(password);
-      const user: IUser = await this.usersService.create(signUpDto, hashedPassword);
-      const token:string = this.jwtToolService.getJwtToken(user);
-      delete user.password;
-      return { user, token };
-    } catch (error) {
-      if (error.code === '23505') {
+      const { email, password } = signUpDto;
+      const existingUser = await this.usersService.findByCredentials(email);
+      if (existingUser)
         throw new UnauthorizedException(
           'User with this email/username/phone already exists',
         );
-      }
-      throw error;
+      const hashedPassword = await this.passwordService.hashPassword(password);
+      const user: IUser = await this.usersService.create(
+        signUpDto,
+        hashedPassword,
+      );
+      const token: string = this.jwtToolService.getJwtToken(user);
+      delete user.password;
+      return { user, token };
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -65,21 +66,21 @@ export class AuthService {
       (await this.passwordService.comparePasswords(password, user.password))
     ) {
       user.lastLogin = new Date();
-      await this.userRepository.save(user);
+      await this.usersService.save(user);
       const { password, ...result } = user;
       return result;
     }
     return null;
   }
 
-  async completeSignUp(id:number , completeSignupDto:CompleteSignupDto){
-    const user = await this.usersService.findById(id)
-    if (user){
-      const updatedUserSchema = Object.assign(user , completeSignupDto)
-      const updatedUser = await this.usersService.save(updatedUserSchema)
-      this.mailerService.sendWelcomeEmail(updatedUser)
-      return user
+  async completeSignUp(id: number, completeSignupDto: CompleteSignupDto) {
+    const user = await this.usersService.findById(id);
+    if (user) {
+      const updatedUserSchema = Object.assign(user, completeSignupDto);
+      const updatedUser = await this.usersService.save(updatedUserSchema);
+      this.mailerService.sendWelcomeEmail(updatedUser);
+      return user;
     }
-    return new ForbiddenException ()
+    return new ForbiddenException();
   }
 }

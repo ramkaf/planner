@@ -3,17 +3,16 @@ import { UsersController } from './controllers/users.controller';
 import { UsersService } from './providers/users.service';
 import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsModule } from 'src/events/events.module';
-import { UploadModule } from 'src/upload/upload.module';
+import { EventsModule } from '../events/events.module';
+import { UploadModule } from '../upload/upload.module';
 import { VerificationService } from './providers/verification.service';
 import { EmailVerification } from './entities/email-verification.entity';
-import { MailerModule } from 'src/mailer/mailer.module';
+import { MailerModule } from '../mailer/mailer.module';
 import { VerificationController } from './controllers/verification.controller';
-
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User , EmailVerification]),
+    TypeOrmModule.forFeature([User, EmailVerification]),
     EventsModule,
     MailerModule,
     UploadModule.register({
@@ -22,8 +21,8 @@ import { VerificationController } from './controllers/verification.controller';
       destination: 'public/uploads/users',
     }),
   ],
-  controllers: [UsersController , VerificationController],
-  providers: [UsersService , VerificationService],
-  exports: [UsersService , VerificationService],
+  controllers: [UsersController, VerificationController],
+  providers: [UsersService, VerificationService],
+  exports: [UsersService, VerificationService],
 })
 export class UsersModule {}

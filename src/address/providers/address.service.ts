@@ -12,23 +12,17 @@ export class AddressService {
     private addressRepository: Repository<Address>,
   ) {}
 
-  // Create a new address
   async create(createAddressDto: CreateAddressDto): Promise<Address> {
     const address = this.addressRepository.create(createAddressDto);
     return await this.addressRepository.save(address);
   }
-
-  // Get all addresses
+  
   async findAll(): Promise<Address[]> {
     return await this.addressRepository.find();
   }
-
-  // Get an address by ID
   async findOne(id: number): Promise<Address> {
     return await this.addressRepository.findOne({ where: { id } });
   }
-
-  // Update an existing address
   async update(
     id: number,
     updateAddressDto: UpdateAddressDto,

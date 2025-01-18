@@ -9,12 +9,12 @@ import {
   JoinTable,
 } from 'typeorm';
 import { EventStatus } from '../interfaces/event.interface';
-import { Tag } from 'src/tag/entities/tag.entity';
-import { Category } from 'src/category/entities/category.entity';
-import { Author } from 'src/author/entities/author.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Review } from 'src/review/entities/review.entity';
-import { Address } from 'src/address/entities/address.entity'; // Import Address entity
+import { Tag } from '../../tag/entities/tag.entity';
+import { Category } from '../../category/entities/category.entity';
+import { Author } from '../../author/entities/author.entity';
+import { User } from '../../users/entities/user.entity';
+import { Review } from '../../review/entities/review.entity';
+import { Address } from '../../address/entities/address.entity'; // Import Address entity
 
 @Entity('event')
 export class Event {

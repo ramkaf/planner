@@ -7,35 +7,27 @@ export class CreateAddressDto {
   @IsString()
   description: string;
 
-  @IsOptional()
   @IsString()
-  province?: string;
+  province: string;
 
-  @IsOptional()
   @IsString()
-  city?: string;
+  city: string;
 
-  @IsOptional()
   @IsString()
-  region?: string;
+  region: string;
 
-  @IsOptional()
   @IsString()
-  mainStreet?: string;
+  mainStreet: string;
 
-  @IsOptional()
   @IsString()
-  subStreet?: string;
+  subStreet: string;
 
-  @IsOptional()
   @IsString()
-  alley?: string;
+  alley: string;
 
-  @IsOptional()
   @IsString()
-  code?: string;
+  code: string;
 
-  @IsOptional()
   @IsString()
-  unit?: string;
+  unit: string;
 }
